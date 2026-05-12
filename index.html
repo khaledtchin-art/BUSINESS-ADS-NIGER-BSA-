@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>BUSINESS ADS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 70px;
+        }
+        
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9eef5 100%);
+            color: #1e2a5e;
+        }
+        
+        body.light-mode .top-nav,
+        body.light-mode .bottom-menu {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.1);
+        }
+        
+        body.light-mode .section,
+        body.light-mode .balance-card,
+        body.light-mode .vault-card {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        /* HEADER */
+        .top-nav {
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo p {
+            font-size: 0.6rem;
+            color: #aaa;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(78,205,196,0.15);
+            padding: 8px 15px;
+            border-radius: 50px;
+        }
+        
+        .balance {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+        
+        .theme-toggle {
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+        
+        /* MENU BOTTOM */
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+        
+        body.logged-in .bottom-menu {
+            display: flex;
+        }
+        
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 30px;
+            color: #888;
+        }
+        
+        .menu-item i { font-size: 22px; }
+        .menu-item span { font-size: 10px; }
+        .menu-item.active { color: #4ecdc4; background: rgba(78,205,196,0.15); }
+        
+        /* CONTAINER */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* SECTIONS */
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.1rem;
+            color: #4ecdc4;
+        }
+        
+        /* CARTES */
+        .balances-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+        }
+        
+        .balance-card .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .stat-card .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        
+        /* COFFRE-FORT */
+        .vault-card {
+            background: linear-gradient(135deg, #1a1f3a, #0f172a);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ffc107;
+        }
+        
+        .vault-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffc107;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .vault-status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        
+        .status-locked {
+            background: rgba(255,71,87,0.2);
+            color: #ff4757;
+        }
+        
+        .status-unlocked {
+            background: rgba(0,210,91,0.2);
+            color: #00d25b;
+        }
+        
+        .date-info {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+        }
+        
+        .vault-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        /* BOUTONS */
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            background: rgba(78,205,196,0.2);
+            color: #4ecdc4;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn-danger {
+            background: rgba(255,71,87,0.2);
+            color: #ff4757;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn-copy {
+            background: rgba(78,205,196,0.15);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #4ecdc4;
+        }
+        
+        /* FORMULAIRES */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+        }
+        
+        /* PAIEMENT GRID */
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .payment-card.selected {
+            border-color: #4ecdc4;
+            background: rgba(78,205,196,0.1);
+        }
+        
+        .payment-card i {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .qr-area {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+        }
+        
+        /* AUTH TABS */
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        .auth-tab.active {
+            color: #4ecdc4;
+            border-bottom: 2px solid #4ecdc4;
+        }
+        
+        /* LISTES */
+        .history-item, .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+        
+        .setting-item:hover { color: #4ecdc4; }
+        
+        .badge-success {
+            background: rgba(0,210,91,0.2);
+            color: #00d25b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        /* PAGES */
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* MODALES */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #1a1f3a;
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e66;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 1100;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 15px; }
+            .vault-buttons { grid-template-columns: 1fr; }
+            .menu-item i { font-size: 20px; }
+            .menu-item span { font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="top-nav">
+    <div class="logo">
+        <h1>BUSINESS ADS</h1>
+        <p>Niger 🇳🇪</p>
+    </div>
+    <div class="user-info" id="userInfoHeader" style="display: none;">
+        <span id="headerUsername"></span>
+        <span class="balance" id="headerBalance">0 FCFA</span>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i> Mode
+    </div>
+</div>
+
+<!-- CONTAINER -->
+<div class="container">
+    
+    <!-- PAGE CONNEXION -->
+    <div id="authPage" class="page active">
+        <div class="section">
+            <h2 style="text-align: center; margin-bottom: 20px;">Bienvenue</h2>
+            <div id="authError" style="background: rgba(255,71,87,0.2); color: #ff4757; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: none;"></div>
+            <div id="authSuccess" style="background: rgba(0,210,91,0.2); color: #00d25b; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: none;"></div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">Connexion</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">Inscription</div>
+            </div>
+            
+            <div id="loginForm">
+                <form onsubmit="login(event)">
+                    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required placeholder="votre@email.com"></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPassword" required placeholder="••••••••"></div>
+                    <button type="submit" class="btn-primary">Se connecter</button>
+                </form>
+            </div>
+            
+            <div id="registerForm" style="display: none;">
+                <form onsubmit="register(event)">
+                    <div class="form-group"><label>Nom complet</label><input type="text" id="regUsername" required placeholder="Ex: Amadou Diallo"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="regEmail" required placeholder="exemple@email.com"></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="regPassword" required placeholder="••••••••"></div>
+                    <div class="form-group"><label>Numéro Wave</label><input type="tel" id="regWaveNumber" placeholder="Ex: 87379715" required></div>
+                    <div class="form-group"><label>Code parrain</label><input type="text" id="regSponsorCode" placeholder="Code de parrainage"></div>
+                    <button type="submit" class="btn-primary">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE ACCUEIL -->
+    <div id="homePage" class="page">
+        <div class="balances-grid">
+            <div class="balance-card"><h3>Solde Principal</h3><div class="amount" id="homeBalance">0 FCFA</div><small>Disponible</small></div>
+            <div class="balance-card"><h3>Total Retraits</h3><div class="amount" id="homeTotalWithdrawn">0 FCFA</div><small>Cumulé</small></div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Filleuls N1</h3><div class="value" id="homeReferrals">0</div></div>
+            <div class="stat-card"><h3>Gains parrainage</h3><div class="value" id="homeReferralEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Gains totaux</h3><div class="value" id="homeTotalEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Liens actifs</h3><div class="value" id="homeLinks">0</div></div>
+        </div>
+        
+        <!-- QR Codes Paiement -->
+        <div class="section">
+            <div class="section-header"><h2>Paiement par QR code</h2></div>
+            <div class="payment-grid">
+                <div class="payment-card"><div id="qrWave"></div><h4>Wave Money</h4></div>
+                <div class="payment-card"><div id="qrOrange"></div><h4>Orange Money</h4></div>
+                <div class="payment-card"><div id="qrMoov"></div><h4>Moov Flooz</h4></div>
+                <div class="payment-card"><div id="qrSoleasPay"></div><h4>SoleasPay</h4></div>
+            </div>
+        </div>
+        
+        <!-- COFFRE-FORT -->
+        <div class="vault-card">
+            <div style="text-align: center;"><i class="fas fa-box" style="font-size: 2rem; color: #ffc107;"></i><h2>Coffre-fort</h2></div>
+            <div class="vault-amount" id="vaultAmount">0 FCFA</div>
+            <div id="vaultStatus" class="vault-status status-unlocked">🔓 Déverrouillé</div>
+            <div id="vaultLockInfo" class="date-info" style="display: none;"></div>
+            <div class="vault-buttons">
+                <button class="btn-secondary" onclick="openDepositVault()">📥 Déposer</button>
+                <button class="btn-secondary" onclick="openWithdrawVault()">📤 Retirer</button>
+                <button class="btn-danger" onclick="openLockVault()">🔒 Verrouiller</button>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="stats-grid">
+            <button class="btn-primary" onclick="showPage('depositPage')">📥 Déposer</button>
+            <button class="btn-primary" onclick="showPage('withdrawPage')">📤 Retirer</button>
+        </div>
+        
+        <!-- Code parrainage -->
+        <div class="section">
+            <div class="section-header"><h2>Mon code parrainage</h2><button class="btn-copy" onclick="copyReferralCode()">Copier</button></div>
+            <div style="text-align: center; padding: 10px; background: rgba(78,205,196,0.1); border-radius: 12px;">
+                <span id="referralCodeDisplay" style="font-family: monospace;">---</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE DÉPÔT -->
+    <div id="depositPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>📥 Déposer de l'argent</h2></div>
+            <div class="balance-card"><h3>Solde actuel</h3><div class="amount" id="depositBalance">0 FCFA</div></div>
+            
+            <div class="payment-grid">
+                <div class="payment-card" onclick="selectPaymentMethod('wave')" id="methodWave"><i class="fas fa-mobile-alt" style="color:#3b82f6"></i><h4>Wave</h4></div>
+                <div class="payment-card" onclick="selectPaymentMethod('orange')" id="methodOrange"><i class="fas fa-mobile-alt" style="color:#ff6600"></i><h4>Orange</h4></div>
+                <div class="payment-card" onclick="selectPaymentMethod('moov')" id="methodMoov"><i class="fas fa-mobile-alt" style="color:#ff6600"></i><h4>Moov</h4></div>
+                <div class="payment-card" onclick="selectPaymentMethod('soleaspay')" id="methodSoleasPay"><i class="fas fa-qrcode" style="color:#2e7d32"></i><h4>SoleasPay</h4></div>
+            </div>
+            
+            <div id="soleaspayArea" class="qr-area" style="display: none;">
+                <div id="qrSoleasPayDeposit"></div>
+                <p style="margin-top: 10px;"><strong>Codes marchands SoleasPay:</strong><br>HRPMSRBXXC<br>FVTIGCNJ6C</p>
+                <button class="btn-primary" onclick="openSoleasPayPage()" style="margin-top: 10px;">🔗 Payer sur SoleasPay</button>
+            </div>
+            
+            <div id="otherMethodArea">
+                <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="depositAmount" min="5000" placeholder="Minimum 5 000"></div>
+                <div class="stats-grid">
+                    <button class="btn-secondary" onclick="setDepositAmount(5000)">5 000</button>
+                    <button class="btn-secondary" onclick="setDepositAmount(10000)">10 000</button>
+                    <button class="btn-secondary" onclick="setDepositAmount(25000)">25 000</button>
+                    <button class="btn-secondary" onclick="setDepositAmount(50000)">50 000</button>
+                </div>
+                <button class="btn-primary" onclick="initiateDeposit()">Payer et obtenir mon code</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE RETRAIT -->
+    <div id="withdrawPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>📤 Retirer mes gains</h2></div>
+            <div class="balance-card"><h3>Solde disponible</h3><div class="amount" id="withdrawBalance">0 FCFA</div></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="withdrawAmount" min="10000" max="500000" oninput="updatePreview()"><small>Min 10 000 | Max 500 000</small></div>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between;"><span>Frais (2%) :</span><span id="previewFees">0 FCFA</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>Montant net :</span><span id="previewNet" style="color:#4ecdc4;">0 FCFA</span></div>
+            </div>
+            <div class="form-group"><label>Numéro Wave</label><input type="tel" id="withdrawPhone" placeholder="Votre numéro Wave"></div>
+            <button class="btn-primary" onclick="confirmWithdraw()">Demander un retrait</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>📜 Historique des retraits</h2></div><div id="withdrawHistoryList"><div class="empty-state">Aucun retrait</div></div></div>
+    </div>
+    
+    <!-- PAGE HISTORIQUE -->
+    <div id="historyPage" class="page">
+        <div class="section"><div class="section-header"><h2>📋 Historique des transactions</h2></div><div id="historyList"><div class="empty-state">Aucune transaction</div></div></div>
+    </div>
+    
+    <!-- PAGE FAVORIS -->
+    <div id="favoritesPage" class="page">
+        <div class="section"><div class="section-header"><h2>⭐ Mes favoris</h2></div><div id="favoritesList"><div class="empty-state">Aucun favori</div></div></div>
+    </div>
+    
+    <!-- PAGE COFFRE -->
+    <div id="vaultPage" class="page">
+        <div class="vault-card">
+            <div style="text-align: center;"><i class="fas fa-box" style="font-size: 2.5rem; color:#ffc107"></i><h2>Mon Coffre-fort</h2></div>
+            <div class="vault-amount" id="vaultDetailAmount">0 FCFA</div>
+            <div id="vaultDetailStatus" class="vault-status status-unlocked">🔓 Déverrouillé</div>
+            <div class="vault-buttons">
+                <button class="btn-secondary" onclick="openDepositVault()">📥 Déposer</button>
+                <button class="btn-secondary" onclick="openWithdrawVault()">📤 Retirer</button>
+                <button class="btn-danger" onclick="openLockVault()">🔒 Verrouiller</button>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>📜 Historique du coffre</h2></div><div id="vaultHistoryList"><div class="empty-state">Aucune opération</div></div></div>
+    </div>
+    
+    <!-- PAGE RÉGLAGES -->
+    <div id="settingsPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>⚙️ Réglages</h2></div>
+            <div class="setting-item" onclick="showProfile()"><span><i class="fas fa-user"></i> Mon profil</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showSecurity()"><span><i class="fas fa-lock"></i> Sécurité</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showAbout()"><span><i class="fas fa-info-circle"></i> À propos</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showSupport()"><span><i class="fas fa-headset"></i> Support</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="logout()"><span><i class="fas fa-sign-out-alt"></i> Déconnexion</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+</div>
+
+<!-- MENU BOTTOM -->
+<div class="bottom-menu">
+    <div class="menu-item" onclick="navigateTo('homePage')" id="menuHome"><i class="fas fa-home"></i><span>Accueil</span></div>
+    <div class="menu-item" onclick="navigateTo('historyPage')" id="menuHistory"><i class="fas fa-clock"></i><span>Historique</span></div>
+    <div class="menu-item" onclick="navigateTo('favoritesPage')" id="menuFavorites"><i class="fas fa-heart"></i><span>Favoris</span></div>
+    <div class="menu-item" onclick="navigateTo('vaultPage')" id="menuVault"><i class="fas fa-box"></i><span>Coffre</span></div>
+    <div class="menu-item" onclick="navigateTo('settingsPage')" id="menuSettings"><i class="fas fa-cog"></i><span>Réglage</span></div>
+</div>
+
+<!-- MODALES -->
+<div id="depositVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('depositVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.5rem;">&times;</button><h2>📥 Déposer dans le coffre</h2><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="vaultDepositAmount" placeholder="Ex: 50000"></div><button class="btn-primary" onclick="depositToVault()">Transférer</button></div></div>
+<div id="withdrawVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('withdrawVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.5rem;">&times;</button><h2>📤 Retirer du coffre</h2><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="vaultWithdrawAmount" placeholder="Ex: 50000"></div><button class="btn-primary" onclick="withdrawFromVault()">Transférer</button></div></div>
+<div id="lockVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('lockVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.5rem;">&times;</button><h2>🔒 Verrouiller le coffre</h2><div class="form-group"><label>Date de début</label><input type="date" id="lockStartDate"></div><div class="form-group"><label>Date de fin (déblocage)</label><input type="date" id="lockEndDate"></div><button class="btn-danger" onclick="lockVault()">Verrouiller</button></div></div>
+
+<script>
+    // ==================== BASE DE DONNÉES ====================
+    let DB = { users: [], withdrawals: [], vaults: [], vaultHistory: [] };
+    let currentUser = null;
+    let selectedPaymentMethod = 'wave';
+    
+    const ADMIN_WHATSAPP = "22787379715";
+    const FEE_PERCENT = 0.02;
+    const SPONSOR_BONUS = 500;
+    const SPONSOR_BONUS_LEVEL2 = 200;
+    
+    function loadData() {
+        DB.users = JSON.parse(localStorage.getItem('ba_users')) || [];
+        DB.withdrawals = JSON.parse(localStorage.getItem('ba_withdrawals')) || [];
+        DB.vaults = JSON.parse(localStorage.getItem('ba_vaults')) || [];
+        DB.vaultHistory = JSON.parse(localStorage.getItem('ba_vault_history')) || [];
+        
+        if (!DB.users.some(u => u.email === 'admin@ads.com')) {
+            DB.users.push({ id: 'admin_1', username: 'Khalid', email: 'admin@ads.com', password: 'admin123', waveNumber: '87379715', balance: 1000000, referralCode: 'REF-ADMIN', isAdmin: true, createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0 });
+            saveData();
+        }
+    }
+    
+    function saveData() {
+        localStorage.setItem('ba_users', JSON.stringify(DB.users));
+        localStorage.setItem('ba_withdrawals', JSON.stringify(DB.withdrawals));
+        localStorage.setItem('ba_vaults', JSON.stringify(DB.vaults));
+        localStorage.setItem('ba_vault_history', JSON.stringify(DB.vaultHistory));
+    }
+    
+    loadData();
+    
+    // ==================== QR CODES ====================
+    function generateQRCodes() {
+        setTimeout(() => {
+            if(document.getElementById('qrWave')) new QRCode(document.getElementById('qrWave'), { text: 'https://wa.me/22787379715?text=Paiement%20Wave', width: 80, height: 80 });
+            if(document.getElementById('qrOrange')) new QRCode(document.getElementById('qrOrange'), { text: 'https://wa.me/22787379715?text=Paiement%20Orange', width: 80, height: 80 });
+            if(document.getElementById('qrMoov')) new QRCode(document.getElementById('qrMoov'), { text: 'https://wa.me/22787379715?text=Paiement%20Moov', width: 80, height: 80 });
+            if(document.getElementById('qrSoleasPay')) new QRCode(document.getElementById('qrSoleasPay'), { text: 'https://soleaspay.com/qr/pay/sb.html?l=ZnI=&a=MA==&d=QWZmaWxpYXRpb24g&m=dA==&c=WEFG&k=dW5UUVhrS1pfZ3BKOEZDcF9GMlhfNzRSX2dkNXV1ZHhPcjhybGVxYVRBUS1BUA==&s=QlVTSU5FU1MgQURTIA==&q=V0hCOUFQNkZJNQ==', width: 80, height: 80 });
+            if(document.getElementById('qrSoleasPayDeposit')) new QRCode(document.getElementById('qrSoleasPayDeposit'), { text: 'https://soleaspay.com/qr/pay/sb.html?l=ZnI=&a=MA==&d=QWZmaWxpYXRpb24g&m=dA==&c=WEFG&k=dW5UUVhrS1pfZ3BKOEZDcF9GMlhfNzRSX2dkNXV1ZHhPcjhybGVxYVRBUS1BUA==&s=QlVTSU5FU1MgQURTIA==&q=V0hCOUFQNkZJNQ==', width: 120, height: 120 });
+        }, 100);
+    }
+    
+    // ==================== AFFICHAGE ====================
+    function formatFCFA(amount) { return (amount || 0).toLocaleString() + ' FCFA'; }
+    function formatDate(iso) { let d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
+    
+    function showToast(msg, type) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function switchAuthTab(tab) {
+        if(tab === 'login') {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.querySelectorAll('.auth-tab')[0].classList.add('active');
+            document.querySelectorAll('.auth-tab')[1].classList.remove('active');
+        } else {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.querySelectorAll('.auth-tab')[1].classList.add('active');
+            document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+        }
+    }
+    
+    function navigateTo(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        const menuMap = { 'homePage':'menuHome', 'historyPage':'menuHistory', 'favoritesPage':'menuFavorites', 'vaultPage':'menuVault', 'settingsPage':'menuSettings' };
+        if(menuMap[pageId]) document.getElementById(menuMap[pageId]).classList.add('active');
+        if(pageId === 'homePage') updateHomePage();
+        if(pageId === 'historyPage') loadHistory();
+        if(pageId === 'vaultPage') updateVaultUI();
+        if(pageId === 'withdrawPage') updateWithdrawPage();
+    }
+    
+    function showPage(pageId) { navigateTo(pageId); }
+    
+    // ==================== AUTH ====================
+    function login(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPassword').value;
+        const user = DB.users.find(u => u.email === email && u.password === pwd);
+        if(!user) {
+            document.getElementById('authError').style.display = 'block';
+            document.getElementById('authError').textContent = 'Identifiants incorrects';
+            return;
+        }
+        currentUser = user;
+        localStorage.setItem('currentUserId', user.id);
+        document.body.classList.add('logged-in');
+        document.getElementById('authPage').classList.remove('active');
+        document.getElementById('userInfoHeader').style.display = 'flex';
+        navigateTo('homePage');
+        updateHomePage();
+        showToast(`Bienvenue ${user.username}`, 'success');
+    }
+    
+    function register(e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const wave = document.getElementById('regWaveNumber').value.trim();
+        const sponsorCode = document.getElementById('regSponsorCode').value.trim().toUpperCase();
+        
+        if(DB.users.some(u => u.email === email)) {
+            showToast("Email déjà utilisé", 'error');
+            return;
+        }
+        
+        let sponsorId = null, sponsorLevel2Id = null;
+        if(sponsorCode) {
+            const sponsor = DB.users.find(u => u.referralCode === sponsorCode);
+            if(sponsor) { sponsorId = sponsor.id; if(sponsor.sponsorId) sponsorLevel2Id = sponsor.sponsorId; }
+        }
+        
+        const newUser = {
+            id: 'user_' + Date.now(), username, email, password, waveNumber: wave, balance: 0,
+            referralCode: 'REF-' + Math.random().toString(36).substring(2,8).toUpperCase(),
+            sponsorId: sponsorId, sponsorLevel2Id: sponsorLevel2Id,
+            createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0, isAdmin: false
+        };
+        DB.users.push(newUser);
+        
+        if(sponsorId) {
+            const s = DB.users.find(u => u.id === sponsorId);
+            if(s) { s.balance += SPONSOR_BONUS; s.totalEarned += SPONSOR_BONUS; showToast(`+${SPONSOR_BONUS} FCFA pour ${s.username}`, 'success'); }
+        }
+        if(sponsorLevel2Id) {
+            const s2 = DB.users.find(u => u.id === sponsorLevel2Id);
+            if(s2) { s2.balance += SPONSOR_BONUS_LEVEL2; s2.totalEarned += SPONSOR_BONUS_LEVEL2; showToast(`+${SPONSOR_BONUS_LEVEL2} FCFA pour ${s2.username}`, 'success'); }
+        }
+        
+        saveData();
+        showToast("Compte créé ! Connectez-vous.", 'success');
+        switchAuthTab('login');
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('currentUserId');
+        document.body.classList.remove('logged-in');
+        location.reload();
+    }
+    
+    // ==================== PAGE ACCUEIL ====================
+    function updateHomePage() {
+        if(!currentUser) return;
+        document.getElementById('homeBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('homeTotalWithdrawn').textContent = formatFCFA(currentUser.totalWithdrawn || 0);
+        const referrals = DB.users.filter(u => u.sponsorId === currentUser.id);
+        document.getElementById('homeReferrals').textContent = referrals.length;
+        document.getElementById('homeReferralEarnings').textContent = formatFCFA(referrals.length * SPONSOR_BONUS);
+        document.getElementById('homeTotalEarnings').textContent = formatFCFA(currentUser.totalEarned || 0);
+        document.getElementById('referralCodeDisplay').textContent = currentUser.referralCode || '---';
+        document.getElementById('headerUsername').textContent = currentUser.username;
+        document.getElementById('headerBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('depositBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        updateVaultUI();
+    }
+    
+    function updateWithdrawPage() {
+        if(!currentUser) return;
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id).reverse();
+        const container = document.getElementById('withdrawHistoryList');
+        if(withdrawals.length === 0) { container.innerHTML = '<div class="empty-state">Aucun retrait</div>'; return; }
+        container.innerHTML = withdrawals.map(w => `<div class="history-item"><div><small>${formatDate(w.date)}</small><br><strong>${formatFCFA(w.net)}</strong></div><div><span class="badge-success">Validé</span></div></div>`).join('');
+    }
+    
+    function loadHistory() {
+        if(!currentUser) return;
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id).map(w => ({...w, type: 'Retrait'}));
+        const transactions = [...withdrawals].sort((a,b) => new Date(b.date) - new Date(a.date));
+        const container = document.getElementById('historyList');
+        if(transactions.length === 0) { container.innerHTML = '<div class="empty-state">Aucune transaction</div>'; return; }
+        container.innerHTML = transactions.map(t => `<div class="history-item"><div><small>${formatDate(t.date)}</small><br><strong>${t.type}</strong></div><div>${formatFCFA(t.net || t.amount)}</div></div>`).join('');
+    }
+    
+    // ==================== COFFRE-FORT ====================
+    function getVault() {
+        let vault = DB.vaults.find(v => v.userId === currentUser.id);
+        if(!vault) {
+            vault = { userId: currentUser.id, amount: 0, isLocked: false, lockStartDate: null, lockEndDate: null };
+            DB.vaults.push(vault);
+            saveData();
+        }
+        return vault;
+    }
+    
+    function updateVaultUI() {
+        const vault = getVault();
+        const now = new Date();
+        if(vault.isLocked && vault.lockEndDate && new Date(vault.lockEndDate) <= now) {
+            vault.isLocked = false;
+            vault.lockStartDate = null;
+            vault.lockEndDate = null;
+            saveData();
+        }
+        const updated = getVault();
+        document.getElementById('vaultAmount').innerHTML = formatFCFA(updated.amount);
+        document.getElementById('vaultDetailAmount').innerHTML = formatFCFA(updated.amount);
+        
+        const statusDiv = document.getElementById('vaultStatus');
+        const detailStatus = document.getElementById('vaultDetailStatus');
+        const lockInfo = document.getElementById('vaultLockInfo');
+        
+        if(updated.isLocked) {
+            statusDiv.className = 'vault-status status-locked';
+            statusDiv.innerHTML = '🔒 Coffre verrouillé';
+            if(detailStatus) { detailStatus.className = 'vault-status status-locked'; detailStatus.innerHTML = '🔒 Verrouillé'; }
+            lockInfo.style.display = 'block';
+            lockInfo.innerHTML = `<i class="fas fa-calendar"></i> Début: ${new Date(updated.lockStartDate).toLocaleDateString('fr-FR')}<br><i class="fas fa-calendar-check"></i> Déblocage: ${new Date(updated.lockEndDate).toLocaleDateString('fr-FR')}`;
+        } else {
+            statusDiv.className = 'vault-status status-unlocked';
+            statusDiv.innerHTML = '🔓 Coffre déverrouillé';
+            if(detailStatus) { detailStatus.className = 'vault-status status-unlocked'; detailStatus.innerHTML = '🔓 Déverrouillé'; }
+            lockInfo.style.display = 'none';
+        }
+        loadVaultHistory();
+    }
+    
+    function openDepositVault() { document.getElementById('depositVaultModal').style.display = 'flex'; }
+    function openWithdrawVault() { document.getElementById('withdrawVaultModal').style.display = 'flex'; }
+    function openLockVault() { 
+        const vault = getVault();
+        if(vault.amount === 0) { showToast("Coffre vide, impossible de verrouiller", 'error'); return; }
+        document.getElementById('lockStartDate').value = new Date().toISOString().split('T')[0];
+        let nextMonth = new Date(); nextMonth.setMonth(nextMonth.getMonth() + 1);
+        document.getElementById('lockEndDate').value = nextMonth.toISOString().split('T')[0];
+        document.getElementById('lockVaultModal').style.display = 'flex';
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
+    function depositToVault() {
+        const amount = parseInt(document.getElementById('vaultDepositAmount').value);
+        if(isNaN(amount) || amount <= 0) { showToast("Montant invalide", 'error'); return; }
+        if(amount > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouillé", 'error'); return; }
+        currentUser.balance -= amount;
+        vault.amount += amount;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'deposit', amount: amount, date: new Date().toISOString() });
+        saveData();
+        closeModal('depositVaultModal');
+        document.getElementById('vaultDepositAmount').value = '';
+        updateHomePage();
+        showToast(`${formatFCFA(amount)} transféré vers le coffre`, 'success');
+    }
+    
+    function withdrawFromVault() {
+        const amount = parseInt(document.getElementById('vaultWithdrawAmount').value);
+        if(isNaN(amount) || amount <= 0) { showToast("Montant invalide", 'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouillé", 'error'); return; }
+        if(amount > vault.amount) { showToast("Montant supérieur au solde du coffre", 'error'); return; }
+        vault.amount -= amount;
+        currentUser.balance += amount;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'withdraw', amount: amount, date: new Date().toISOString() });
+        saveData();
+        closeModal('withdrawVaultModal');
+        document.getElementById('vaultWithdrawAmount').value = '';
+        updateHomePage();
+        showToast(`${formatFCFA(amount)} transféré vers le solde principal`, 'success');
+    }
+    
+    function lockVault() {
+        const startDate = document.getElementById('lockStartDate').value;
+        const endDate = document.getElementById('lockEndDate').value;
+        if(!startDate || !endDate) { showToast("Choisissez les dates", 'error'); return; }
+        if(new Date(endDate) <= new Date(startDate)) { showToast("La date de fin doit être après la date de début", 'error'); return; }
+        const vault = getVault();
+        vault.isLocked = true;
+        vault.lockStartDate = startDate;
+        vault.lockEndDate = endDate;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'lock', amount: vault.amount, startDate: startDate, endDate: endDate, date: new Date().toISOString() });
+        saveData();
+        closeModal('lockVaultModal');
+        updateVaultUI();
+        showToast(`🔒 Coffre verrouillé jusqu'au ${new Date(endDate).toLocaleDateString('fr-FR')}`, 'success');
+    }
+    
+    function loadVaultHistory() {
+        const history = DB.vaultHistory.filter(h => h.userId === currentUser.id).slice(0, 20);
+        const container = document.getElementById('vaultHistoryList');
+        if(!container) return;
+        if(history.length === 0) { container.innerHTML = '<div class="empty-state">Aucune opération</div>'; return; }
+        container.innerHTML = history.map(h => `<div class="history-item"><div><small>${formatDate(h.date)}</small><br><strong>${h.type === 'deposit' ? '📥 Dépôt' : (h.type === 'withdraw' ? '📤 Retrait' : '🔒 Verrouillage')}</strong></div><div>${h.type === 'lock' ? h.startDate : formatFCFA(h.amount)}</div></div>`).join('');
+    }
+    
+    // ==================== DÉPÔT ====================
+    function selectPaymentMethod(method) {
+        selectedPaymentMethod = method;
+        document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
+        document.getElementById(`method${method.charAt(0).toUpperCase() + method.slice(1)}`).classList.add('selected');
+        
+        const soleasArea = document.getElementById('soleaspayArea');
+        const otherArea = document.getElementById('otherMethodArea');
+        
+        if(method === 'soleaspay') {
+            soleasArea.style.display = 'block';
+            otherArea.style.display = 'none';
+        } else {
+            soleasArea.style.display = 'none';
+            otherArea.style.display = 'block';
+        }
+    }
+    
+    function setDepositAmount(amount) { document.getElementById('depositAmount').value = amount; }
+    
+    function initiateDeposit() {
+        let amount = parseInt(document.getElementById('depositAmount').value);
+        if(amount < 5000) { showToast("Minimum 5 000 FCFA", 'error'); return; }
+        const code = 'DEP-' + Math.random().toString(36).substring(2,8).toUpperCase();
+        const account = selectedPaymentMethod === 'wave' ? '87379715' : (selectedPaymentMethod === 'orange' ? '87379715' : '87379715');
+        showToast(`Envoyez ${formatFCFA(amount)} à ${account}. Code: ${code}`, 'success');
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Dépôt%20${amount}%20FCFA%20par%20${currentUser.username}%20Code:%20${code}`, '_blank');
+    }
+    
+    function openSoleasPayPage() {
+        window.open('https://soleaspay.com/qr/pay/sb.html?l=ZnI=&a=MA==&d=QWZmaWxpYXRpb24g&m=dA==&c=WEFG&k=dW5UUVhrS1pfZ3BKOEZDcF9GMlhfNzRSX2dkNXV1ZHhPcjhybGVxYVRBUS1BUA==&s=QlVTSU5FU1MgQURTIA==&q=V0hCOUFQNkZJNQ==', '_blank');
+    }
+    
+    // ==================== RETRAIT ====================
+    function updatePreview() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+        let fees = Math.round(a * FEE_PERCENT);
+        document.getElementById('previewFees').textContent = formatFCFA(fees);
+        document.getElementById('previewNet').textContent = formatFCFA(a - fees);
+    }
+    
+    function confirmWithdraw() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value);
+        let phone = document.getElementById('withdrawPhone').value.trim();
+        if(a < 10000 || a > 500000 || !phone) { showToast("Montant ou téléphone invalide", 'error'); return; }
+        if(a > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        
+        let fees = Math.round(a * FEE_PERCENT);
+        let net = a - fees;
+        
+        currentUser.balance -= a;
+        currentUser.totalWithdrawn = (currentUser.totalWithdrawn || 0) + net;
+        
+        DB.withdrawals.push({ id: 'wdr_' + Date.now(), userId: currentUser.id, phone: phone, amount: a, fees: fees, net: net, status: 'auto_validated', date: new Date().toISOString() });
+        
+        const admin = DB.users.find(u => u.isAdmin);
+        if(admin && currentUser.id !== admin.id) { admin.balance += fees; admin.totalEarned += fees; }
+        
+        saveData();
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawPhone').value = '';
+        updatePreview();
+        updateHomePage();
+        updateWithdrawPage();
+        showToast(`Retrait de ${formatFCFA(net)} validé`, 'success');
+        
+        // Envoie notification WhatsApp
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Retrait%20de%20${a}%20FCFA%20par%20${currentUser.username}%20Net:${net}`, '_blank');
+    }
+    
+    function copyReferralCode() { navigator.clipboard.writeText(currentUser.referralCode); showToast("Code copié", 'success'); }
+    
+    // ==================== RÉGLAGES ====================
+    function showProfile() { showToast(`👤 ${currentUser.username}\n📧 ${currentUser.email}\n📞 ${currentUser.waveNumber}\n💰 ${formatFCFA(currentUser.balance)}`, 'info'); }
+    function showSecurity() { showToast("🔐 Données sauvegardées localement", 'info'); }
+    function showAbout() { showToast("📱 BUSINESS ADS v2.0\n© 2025 Niger", 'info'); }
+    function showSupport() { window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Bonjour%20besoin%20d%27aide`, '_blank'); }
+    
+    // ==================== THEME ====================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    
+    // ==================== INIT ====================
+    function restoreSession() {
+        const savedId = localStorage.getItem('currentUserId');
+        if(savedId) {
+            const user = DB.users.find(u => u.id === savedId);
+            if(user) {
+                currentUser = user;
+                document.body.classList.add('logged-in');
+                document.getElementById('userInfoHeader').style.display = 'flex';
+                navigateTo('homePage');
+                updateHomePage();
+                generateQRCodes();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    if(!restoreSession()) {
+        document.getElementById('authPage').classList.add('active');
+        document.getElementById('userInfoHeader').style.display = 'none';
+    } else {
+        generateQRCodes();
+    }
+</script>
+</body>
+</html>
