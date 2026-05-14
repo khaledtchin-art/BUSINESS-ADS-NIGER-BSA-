@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>BUSINESS ADS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 70px;
+        }
+        
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9eef5 100%);
+            color: #1e2a5e;
+        }
+        
+        body.light-mode .top-nav,
+        body.light-mode .bottom-menu {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.1);
+        }
+        
+        body.light-mode .section,
+        body.light-mode .balance-card,
+        body.light-mode .virtual-card,
+        body.light-mode .video-card {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .top-nav {
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo h1 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo p { font-size: 0.55rem; color: #aaa; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(78,205,196,0.15);
+            padding: 6px 12px;
+            border-radius: 50px;
+        }
+        
+        .balance { color: #4ecdc4; font-weight: bold; font-size: 0.8rem; }
+        .theme-toggle { cursor: pointer; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 50px; font-size: 0.7rem; }
+        
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        
+        body.logged-in .bottom-menu { display: flex; }
+        
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 30px;
+            color: #888;
+        }
+        
+        .menu-item i { font-size: 16px; }
+        .menu-item span { font-size: 8px; }
+        .menu-item.active { color: #4ecdc4; background: rgba(78,205,196,0.15); }
+        
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .section-header h2 { font-size: 1rem; color: #4ecdc4; }
+        
+        .balances-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .balance-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .balance-card .amount {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stat-card .value { font-size: 1.1rem; font-weight: bold; color: #4ecdc4; }
+        
+        /* GRILLE VIDÉOS FORMATION */
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        .video-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .video-card:hover { transform: translateY(-3px); background: rgba(78,205,196,0.1); }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-card h3 { font-size: 0.9rem; margin-top: 10px; }
+        .video-card p { font-size: 0.7rem; color: #aaa; margin-top: 5px; }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill { background: #4ecdc4; height: 100%; border-radius: 10px; transition: width 0.3s; }
+        
+        .virtual-card {
+            background: linear-gradient(135deg, #1a1f3a, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(78,205,196,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .virtual-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(78,205,196,0.1);
+            border-radius: 50%;
+        }
+        
+        .card-chip { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .card-chip i:first-child { font-size: 1.8rem; color: #ffc107; }
+        .card-chip i:last-child { font-size: 1.8rem; }
+        .card-number { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin: 12px 0; font-weight: 600; }
+        .card-details { display: flex; justify-content: space-between; margin-top: 15px; }
+        .card-details div span:first-child { font-size: 0.6rem; color: #aaa; display: block; }
+        .card-details div span:last-child { font-size: 0.8rem; font-weight: 600; }
+        
+        .receipt-card {
+            background: white;
+            color: #1a1f3a;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .receipt-header { text-align: center; border-bottom: 2px solid #4ecdc4; padding-bottom: 10px; margin-bottom: 15px; }
+        .receipt-header h3 { color: #4ecdc4; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; }
+        .receipt-status { background: rgba(0,210,91,0.15); color: #00d25b; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        
+        .link-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(78,205,196,0.2);
+        }
+        
+        .link-url { font-family: monospace; font-size: 0.7rem; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; word-break: break-all; margin: 10px 0; }
+        
+        .kyc-status { padding: 10px; border-radius: 12px; margin: 10px 0; text-align: center; }
+        .kyc-pending { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .kyc-approved { background: rgba(0,210,91,0.2); color: #00d25b; }
+        .kyc-rejected { background: rgba(255,71,87,0.2); color: #ff4757; }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .tool-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .tool-card:hover { transform: translateY(-3px); background: rgba(78,205,196,0.1); }
+        .tool-card i { font-size: 24px; color: #4ecdc4; margin-bottom: 8px; }
+        .tool-card h4 { font-size: 0.8rem; }
+        
+        .vault-card {
+            background: linear-gradient(135deg, #1a1f3a, #0f172a);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 2px solid #ffc107;
+        }
+        
+        .vault-amount { font-size: 1.6rem; font-weight: bold; color: #ffc107; text-align: center; margin: 10px 0; }
+        .vault-status { text-align: center; padding: 8px; border-radius: 10px; margin: 10px 0; font-size: 0.8rem; }
+        .status-locked { background: rgba(255,71,87,0.2); color: #ff4757; }
+        .status-unlocked { background: rgba(0,210,91,0.2); color: #00d25b; }
+        .vault-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        
+        .qr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .qr-card { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 12px; text-align: center; }
+        .qr-card canvas { margin: 0 auto; }
+        .qr-card h4 { font-size: 0.8rem; margin-top: 8px; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        
+        .btn-secondary {
+            background: rgba(78,205,196,0.2);
+            color: #4ecdc4;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        
+        .btn-danger {
+            background: rgba(255,71,87,0.2);
+            color: #ff4757;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        
+        .btn-copy {
+            background: rgba(78,205,196,0.15);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #4ecdc4;
+            font-size: 0.7rem;
+        }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.7rem; color: #aaa; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+        
+        .history-item, .setting-item, .referral-item, .card-item, .link-item, .ticket-item, .ranking-item, .announcement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+        
+        .setting-item:hover { color: #4ecdc4; }
+        
+        .badge-success { background: rgba(0,210,91,0.2); color: #00d25b; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        .badge-pending { background: rgba(255,193,7,0.2); color: #ffc107; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        .badge-gold { background: rgba(255,215,0,0.2); color: #ffd700; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        .badge-silver { background: rgba(192,192,192,0.2); color: #c0c0c0; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        
+        .empty-state { text-align: center; padding: 30px; color: #888; font-size: 0.85rem; }
+        
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #1a1f3a;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e66;
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 1100;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .whatsapp-float {
+            position: fixed;
+            bottom: 80px;
+            right: 15px;
+            background-color: #25D366;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            cursor: pointer;
+        }
+        
+        .whatsapp-float i { font-size: 26px; color: white; }
+        
+        canvas { max-height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; margin-top: 10px; }
+        
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .card-number { font-size: 0.9rem; }
+            .menu-item i { font-size: 14px; }
+            .menu-item span { font-size: 7px; }
+            .whatsapp-float { width: 45px; height: 45px; bottom: 75px; right: 12px; }
+            .video-grid { gap: 12px; }
+        }
+        
+        @media print {
+            body * { visibility: hidden; }
+            .receipt-card, .receipt-card * { visibility: visible; }
+            .receipt-card { position: absolute; top: 0; left: 0; width: 100%; margin: 0; padding: 20px; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <div class="logo">
+        <h1>BUSINESS ADS</h1>
+        <p>Niger 🇳🇪</p>
+    </div>
+    <div class="user-info" id="userInfoHeader" style="display: none;">
+        <span id="headerUsername"></span>
+        <span class="balance" id="headerBalance">0 FCFA</span>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </div>
+</div>
+
+<div class="container">
+    
+    <!-- PAGE CONNEXION -->
+    <div id="authPage" class="page active">
+        <div class="section">
+            <h2 style="text-align: center; margin-bottom: 15px;">Bienvenue</h2>
+            <div id="authError" style="background: rgba(255,71,87,0.2); color: #ff4757; padding: 8px; border-radius: 10px; margin-bottom: 12px; display: none; font-size: 0.8rem;"></div>
+            <div id="authSuccess" style="background: rgba(0,210,91,0.2); color: #00d25b; padding: 8px; border-radius: 10px; margin-bottom: 12px; display: none; font-size: 0.8rem;"></div>
+            <div class="auth-tabs" style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#4ecdc4; border-bottom:2px solid #4ecdc4;">Connexion</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')" style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#888;">Inscription</div>
+            </div>
+            <div id="loginForm">
+                <form onsubmit="login(event)">
+                    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required placeholder="votre@email.com"></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPassword" required placeholder="••••••••"></div>
+                    <button type="submit" class="btn-primary">Se connecter</button>
+                </form>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <form onsubmit="register(event)">
+                    <div class="form-group"><label>Nom complet</label><input type="text" id="regUsername" required placeholder="Ex: Amadou Diallo"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="regEmail" required placeholder="exemple@email.com"></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="regPassword" required placeholder="••••••••"></div>
+                    <div class="form-group"><label>Numéro Wave</label><input type="tel" id="regWaveNumber" placeholder="Ex: 87379715" required></div>
+                    <div class="form-group"><label>Code parrain</label><input type="text" id="regSponsorCode" placeholder="Code de parrainage (optionnel)"></div>
+                    <button type="submit" class="btn-primary">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE ACCUEIL -->
+    <div id="homePage" class="page">
+        <div class="balances-grid">
+            <div class="balance-card"><h3>Solde Principal</h3><div class="amount" id="homeBalance">0 FCFA</div><small>Disponible</small></div>
+            <div class="balance-card"><h3>Total Retraits</h3><div class="amount" id="homeTotalWithdrawn">0 FCFA</div><small>Cumulé</small></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Filleuls N1</h3><div class="value" id="homeReferrals">0</div></div>
+            <div class="stat-card"><h3>Gains parrainage</h3><div class="value" id="homeReferralEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Gains totaux</h3><div class="value" id="homeTotalEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Budget restant</h3><div class="value" id="budgetRemaining">0%</div></div>
+        </div>
+        
+        <!-- Budget Performance -->
+        <div class="section">
+            <div class="section-header"><h2>💰 Performance du budget</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Budget total</h3><div class="value" id="budgetTotal">0 FCFA</div></div>
+                <div class="stat-card"><h3>Dépenses</h3><div class="value" id="budgetSpent">0 FCFA</div></div>
+                <div class="stat-card"><h3>Économies</h3><div class="value" id="budgetSaved">0 FCFA</div></div>
+                <div class="stat-card"><h3>Recommandation</h3><div class="value" id="budgetAdvice">-</div></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="budgetProgress" style="width:0%"></div></div>
+            <button class="btn-secondary" onclick="openBudgetModal()">📊 Définir mon budget</button>
+        </div>
+        
+        <!-- Graphique avancé -->
+        <div class="section">
+            <div class="section-header"><h2>📈 Évolution des gains (30 jours)</h2></div>
+            <canvas id="earningsChart"></canvas>
+        </div>
+        
+        <!-- Vérification KYC -->
+        <div id="kycSection" class="section" style="border: 2px solid #ffc107;">
+            <div class="section-header"><h2>🆔 Vérification d'identité (KYC)</h2><span id="kycStatusBadge"></span></div>
+            <div id="kycContent"></div>
+        </div>
+        
+        <!-- Outils rapides -->
+        <div class="tools-grid">
+            <div class="tool-card" onclick="navigateTo('cardPage')"><i class="fas fa-credit-card"></i><h4>Ma Carte</h4></div>
+            <div class="tool-card" onclick="navigateTo('vaultPage')"><i class="fas fa-box"></i><h4>Coffre</h4></div>
+            <div class="tool-card" onclick="navigateTo('depositPage')"><i class="fas fa-download"></i><h4>Dépôt</h4></div>
+            <div class="tool-card" onclick="navigateTo('withdrawPage')"><i class="fas fa-upload"></i><h4>Retrait</h4></div>
+            <div class="tool-card" onclick="navigateTo('linksPage')"><i class="fas fa-link"></i><h4>Liens</h4></div>
+            <div class="tool-card" onclick="navigateTo('transferPage')"><i class="fas fa-exchange-alt"></i><h4>Transfert</h4></div>
+            <div class="tool-card" onclick="navigateTo('rankingPage')"><i class="fas fa-trophy"></i><h4>Classement</h4></div>
+            <div class="tool-card" onclick="navigateTo('ticketsPage')"><i class="fas fa-ticket-alt"></i><h4>Support</h4></div>
+        </div>
+        
+        <!-- Code parrainage -->
+        <div class="section">
+            <div class="section-header"><h2>Mon code parrainage</h2><button class="btn-copy" onclick="copyReferralCode()">Copier</button></div>
+            <div style="text-align: center; padding: 8px; background: rgba(78,205,196,0.1); border-radius: 10px;">
+                <span id="referralCodeDisplay" style="font-family: monospace; font-size: 0.9rem;">---</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE CARTE VIRTUELLE -->
+    <div id="cardPage" class="page">
+        <div class="section-header"><h2>💳 Ma Carte Virtuelle</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="virtual-card">
+            <div class="card-chip"><i class="fas fa-microchip"></i><i class="fab fa-cc-visa"></i></div>
+            <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
+            <div class="card-details">
+                <div><span>Titulaire</span><span id="cardHolderName">---</span></div>
+                <div><span>Expiration</span><span id="cardExpiry">12/28</span></div>
+                <div><span>CVV</span><span id="cardCVV">***</span></div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-secondary" onclick="copyCardNumber()">Copier N°</button>
+                <button class="btn-secondary" onclick="generateNewCard()">Nouvelle carte</button>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>💰 Solde de la carte</h2></div>
+            <div class="balance-card"><div class="amount" id="cardBalance">0 FCFA</div></div>
+            <button class="btn-primary" onclick="transferToCard()">Transférer vers la carte</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>📊 Statistiques</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Transactions</h3><div class="value" id="cardTransactions">0</div></div>
+                <div class="stat-card"><h3>Dépenses</h3><div class="value" id="cardSpending">0 FCFA</div></div>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>💳 Mes cartes</h2></div><div id="cardsList"><div class="empty-state">Aucune autre carte</div></div></div>
+    </div>
+    
+    <!-- PAGE FORMATIONS (AVEC TES VIDÉOS) -->
+    <div id="formationsPage" class="page">
+        <div class="section-header"><h2>🎓 Formations</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="video-grid">
+            <!-- Vidéo 1 -->
+            <div class="video-card">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/Sf9QCHDyNMU" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <h3>📚 Comment se lancer dans l'Affiliation en 10 min</h3>
+                <p>Apprenez les bases de l'affiliation en seulement 10 minutes</p>
+            </div>
+            <!-- Vidéo 2 -->
+            <div class="video-card">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/SeASFfjxXsc" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <h3>🚀 Comment Lancer son Business de Marketing d'Affiliation</h3>
+                <p>Guide complet pour débuter de zéro</p>
+            </div>
+            <!-- Vidéo 3 -->
+            <div class="video-card">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/tUPa8DoaJUc" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <h3>🎓 FORMATION AFFILIATION : Le Cours COMPLET</h3>
+                <p>Le cours complet pour tout savoir sur l'affiliation</p>
+            </div>
+            <!-- Playlist (intégrée) -->
+            <div class="video-card">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/videoseries?list=PLtu6Is7FeUpeQkSgmF7ohVkAzlbSQD9JX" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <h3>📖 Playlist Formation Affiliation (12 vidéos)</h3>
+                <p>Formation complète en 12 vidéos - Playlist gratuite</p>
+            </div>
+        </div>
+        <div class="section" style="margin-top: 16px;">
+            <div class="section-header"><h2>📘 Ebooks & Ressources</h2></div>
+            <div class="link-card">
+                <i class="fas fa-file-pdf" style="color:#ff4757; font-size: 1.2rem;"></i>
+                <strong> Guide complet de l'affiliation (PDF)</strong>
+                <p style="font-size: 0.7rem; margin-top: 8px;">Téléchargez notre guide gratuit pour réussir en affiliation</p>
+                <button class="btn-copy" onclick="showToast('Contactez l\\'admin pour recevoir le PDF', 'info')">📥 Demander le PDF</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE LIENS D'AFFILIATION -->
+    <div id="linksPage" class="page">
+        <div class="section-header"><h2>🔗 Mes liens d'affiliation</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="section">
+            <div class="form-group"><label>Nom du produit</label><input type="text" id="linkProductName" placeholder="Ex: iPhone 14 Pro Max"></div>
+            <div class="form-group"><label>URL de destination</label><input type="url" id="linkDestination" placeholder="https://exemple.com/produit"></div>
+            <div class="form-group"><label>Commission par clic (FCFA)</label><input type="number" id="linkCommission" value="500"></div>
+            <button class="btn-primary" onclick="createAffiliateLink()">Créer mon lien</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>📋 Mes liens créés</h2></div><div id="userLinksList"><div class="empty-state">Aucun lien créé</div></div></div>
+        <div class="section"><div class="section-header"><h2>📊 Statistiques</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total clics</h3><div class="value" id="totalClicks">0</div></div>
+                <div class="stat-card"><h3>Total gains</h3><div class="value" id="totalLinkEarnings">0 FCFA</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE TRANSFERT -->
+    <div id="transferPage" class="page">
+        <div class="section-header"><h2>🔄 Transfert d'argent</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="balance-card"><h3>Mon solde</h3><div class="amount" id="transferBalance">0 FCFA</div></div>
+        <div class="form-group"><label>Email du destinataire</label><input type="email" id="transferEmail" placeholder="exemple@email.com"></div>
+        <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="transferAmount" min="1000" placeholder="Minimum 1 000"></div>
+        <div class="form-group"><label>Message</label><input type="text" id="transferMessage" placeholder="Message..."></div>
+        <button class="btn-primary" onclick="sendTransfer()">Envoyer l'argent</button>
+        <div class="section"><div class="section-header"><h2>📜 Historique des transferts</h2></div><div id="transfersList"><div class="empty-state">Aucun transfert</div></div></div>
+    </div>
+    
+    <!-- PAGE CLASSEMENT -->
+    <div id="rankingPage" class="page">
+        <div class="section-header"><h2>🏆 Classement des meilleurs parrains</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="section"><div id="rankingList"><div class="empty-state">Chargement...</div></div></div>
+        <div class="section"><div class="section-header"><h2>🎁 Récompenses du mois</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>🥇 1er</h3><div class="value">50 000 FCFA</div></div>
+                <div class="stat-card"><h3>🥈 2e</h3><div class="value">25 000 FCFA</div></div>
+                <div class="stat-card"><h3>🥉 3e</h3><div class="value">10 000 FCFA</div></div>
+                <div class="stat-card"><h3>🎖️ 4e-10e</h3><div class="value">5 000 FCFA</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE COFFRE -->
+    <div id="vaultPage" class="page">
+        <div class="vault-card">
+            <div style="text-align: center;"><i class="fas fa-box" style="font-size: 1.8rem; color:#ffc107"></i><h2>Coffre-fort</h2></div>
+            <div class="vault-amount" id="vaultDetailAmount">0 FCFA</div>
+            <div id="vaultDetailStatus" class="vault-status status-unlocked">🔓 Coffre déverrouillé</div>
+            <div id="vaultDetailLockInfo" class="date-info" style="display: none; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 8px; margin: 10px 0; font-size: 0.7rem;"></div>
+            <div class="vault-buttons">
+                <button class="btn-secondary" onclick="openDepositVault()">📥 Déposer</button>
+                <button class="btn-secondary" onclick="openWithdrawVault()">📤 Retirer</button>
+                <button class="btn-danger" onclick="openLockVault()">🔒 Verrouiller</button>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>📜 Historique</h2></div><div id="vaultHistoryList"><div class="empty-state">Aucune opération</div></div></div>
+    </div>
+    
+    <!-- PAGE DÉPÔT -->
+    <div id="depositPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>📥 Déposer de l'argent</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+            <div class="balance-card"><h3>Solde actuel</h3><div class="amount" id="depositBalance">0 FCFA</div></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="depositAmount" min="5000" placeholder="Minimum 5 000"></div>
+            <div class="stats-grid" style="margin-bottom: 12px;">
+                <button class="btn-secondary" onclick="setDepositAmount(5000)">5 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(10000)">10 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(25000)">25 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(50000)">50 000</button>
+            </div>
+            <button class="btn-primary" onclick="initiateDeposit()">Payer et obtenir mon code</button>
+            <p style="font-size: 0.65rem; text-align: center; margin-top: 12px;">📱 Wave • Orange • Moov • SoleasPay</p>
+        </div>
+    </div>
+    
+    <!-- PAGE RETRAIT -->
+    <div id="withdrawPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>📤 Retirer mes gains</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+            <div class="balance-card"><h3>Solde disponible</h3><div class="amount" id="withdrawBalance">0 FCFA</div></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="withdrawAmount" min="10000" max="500000" oninput="updatePreview()"><small>Min 10 000 | Max 500 000</small></div>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin: 12px 0;">
+                <div><span>Frais (2%) :</span><span id="previewFees">0 FCFA</span></div>
+                <div><span>Montant net :</span><span id="previewNet" style="color:#4ecdc4;">0 FCFA</span></div>
+            </div>
+            <div class="form-group"><label>Numéro Wave</label><input type="tel" id="withdrawPhone" placeholder="Votre numéro Wave"></div>
+            <button class="btn-primary" onclick="confirmWithdraw()">Demander un retrait</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>📜 Historique des retraits</h2></div><div id="withdrawHistoryList"><div class="empty-state">Aucun retrait</div></div></div>
+    </div>
+    
+    <!-- PAGE HISTORIQUE -->
+    <div id="historyPage" class="page">
+        <div class="section"><div class="section-header"><h2>📋 Historique</h2><button class="btn-copy" onclick="exportToCSV()">📥 Exporter CSV</button></div>
+        <div id="historyList"><div class="empty-state">Aucune transaction</div></div></div>
+    </div>
+    
+    <!-- PAGE TICKETS SUPPORT -->
+    <div id="ticketsPage" class="page">
+        <div class="section-header"><h2>🎫 Support & Tickets</h2><button class="btn-copy" onclick="openTicketModal()">+ Nouveau ticket</button></div>
+        <div class="section"><div id="ticketsList"><div class="empty-state">Aucun ticket</div></div></div>
+        <div id="adminTicketsSection" style="display:none;" class="section">
+            <div class="section-header"><h2>📋 Tickets en attente (Admin)</h2></div>
+            <div id="adminTicketsList"><div class="empty-state">Aucun ticket en attente</div></div>
+        </div>
+    </div>
+    
+    <!-- PAGE ANNONCES -->
+    <div id="announcementsPage" class="page">
+        <div class="section-header"><h2>📢 Annonces</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div id="adminAnnouncementSection" style="display:none;" class="section">
+            <div class="form-group"><label>Nouvelle annonce</label><textarea id="newAnnouncement" rows="3" placeholder="Écrivez votre annonce ici..."></textarea></div>
+            <button class="btn-primary" onclick="sendAnnouncement()">📢 Envoyer à tous</button>
+        </div>
+        <div class="section"><div id="announcementsList"><div class="empty-state">Aucune annonce</div></div></div>
+    </div>
+    
+    <!-- PAGE QR CODES -->
+    <div id="qrCodePage" class="page">
+        <div class="section-header"><h2>📱 Paiement par QR code</h2><button class="btn-copy" onclick="navigateTo('settingsPage')">Retour</button></div>
+        <div class="qr-grid">
+            <div class="qr-card"><div id="qrWave"></div><h4>Wave Money</h4></div>
+            <div class="qr-card"><div id="qrOrange"></div><h4>Orange Money</h4></div>
+            <div class="qr-card"><div id="qrMoov"></div><h4>Moov Flooz</h4></div>
+            <div class="qr-card"><div id="qrSoleasPay"></div><h4>SoleasPay</h4></div>
+        </div>
+        <p style="text-align: center; margin-top: 12px; font-size: 0.65rem;">Scannez le QR code pour payer</p>
+    </div>
+    
+    <!-- PAGE REÇU -->
+    <div id="receiptPage" class="page">
+        <div class="section-header"><h2>🧾 Reçu de transaction</h2><button class="btn-copy" onclick="navigateTo('historyPage')">Retour</button></div>
+        <div id="receiptContent" class="receipt-card"></div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn-primary no-print" onclick="printReceipt()">🖨️ Imprimer</button>
+            <button class="btn-primary no-print" onclick="emailReceipt()">📧 Envoyer par email</button>
+        </div>
+    </div>
+    
+    <!-- PAGE ADMIN -->
+    <div id="adminPage" class="page">
+        <div class="section-header"><h2>👑 Panel Administrateur</h2><button class="btn-copy" onclick="navigateTo('homePage')">Retour</button></div>
+        <div class="section"><div class="section-header"><h2>🆔 Demandes KYC</h2><span class="badge-pending" id="pendingKycCount">0</span></div><div id="kycRequestsList"><div class="empty-state">Aucune demande</div></div></div>
+        <div class="section"><div class="section-header"><h2>👥 Utilisateurs</h2></div><div id="usersListAdmin"><div class="empty-state">Chargement...</div></div></div>
+        <div class="section"><div class="section-header"><h2>📊 Statistiques</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total utilisateurs</h3><div class="value" id="totalUsers">0</div></div>
+                <div class="stat-card"><h3>Total retraits</h3><div class="value" id="totalWithdrawals">0 FCFA</div></div>
+                <div class="stat-card"><h3>Total commissions</h3><div class="value" id="totalCommissions">0 FCFA</div></div>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>📢 Annonce globale</h2></div>
+            <div class="form-group"><textarea id="adminAnnouncement" rows="2" placeholder="Message à tous les utilisateurs..."></textarea></div>
+            <button class="btn-primary" onclick="sendGlobalAnnouncement()">Envoyer l'annonce</button>
+        </div>
+    </div>
+    
+    <!-- PAGE COMPTE -->
+    <div id="accountPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>🔐 Gestion du compte</h2><button class="btn-copy" onclick="navigateTo('settingsPage')">Retour</button></div>
+            <div class="setting-item" onclick="addAnotherAccount()"><span><i class="fas fa-plus-circle"></i> Ajouter un autre compte</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showConnectedDevices()"><span><i class="fas fa-laptop"></i> Vos appareils connectés</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="changeSecretCode()"><span><i class="fas fa-key"></i> Modifier votre code secret</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showSecuritySettings()"><span><i class="fas fa-shield-alt"></i> Paramètres de sécurité</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="section"><div class="section-header"><h2>📍 Notre adresse</h2></div>
+            <div style="padding: 10px; background: rgba(78,205,196,0.1); border-radius: 10px;">
+                <p>BUSINESS ADS NIGER - Niamey, Niger</p>
+                <p>📞 +227 87 37 97 15</p>
+                <p>📧 businessads.niger@gmail.com</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE RÉGLAGES -->
+    <div id="settingsPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>⚙️ Réglages</h2></div>
+            <div class="setting-item" onclick="navigateTo('accountPage')"><span><i class="fas fa-user-circle"></i> Gérer le compte</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showDataDefinitions()"><span><i class="fas fa-database"></i> Définitions des données</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="navigateTo('formationsPage')"><span><i class="fas fa-graduation-cap"></i> Formations</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showAboutCompany()"><span><i class="fas fa-info-circle"></i> À propos de nous</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showTermsAndConditions()"><span><i class="fas fa-file-alt"></i> Conditions générales</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showReferralsList()"><span><i class="fas fa-users"></i> Liste de parrainages</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showCardsList()"><span><i class="fas fa-credit-card"></i> Liste des cartes</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="navigateTo('announcementsPage')"><span><i class="fas fa-bullhorn"></i> Annonces</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showHelpCenter()"><span><i class="fas fa-question-circle"></i> Aide ?</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showContactUs()"><span><i class="fas fa-headset"></i> Contactez-nous</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPaymentQRCodes()"><span><i class="fas fa-qrcode"></i> QR codes paiement</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showAdminPanel()"><span><i class="fas fa-shield-alt"></i> Panel Admin</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="logout()"><span><i class="fas fa-sign-out-alt"></i> Déconnexion</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="section"><div class="section-header"><h2>📢 Nos services</h2></div>
+            <div style="padding: 8px;">
+                <p>✅ Affiliation et parrainage</p>
+                <p>✅ Paiement par QR code</p>
+                <p>✅ Carte virtuelle</p>
+                <p>✅ Coffre-fort</p>
+                <p>✅ Liens d'affiliation</p>
+                <p>✅ Transfert d'argent</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MENU BOTTOM -->
+<div class="bottom-menu">
+    <div class="menu-item" onclick="navigateTo('homePage')" id="menuHome"><i class="fas fa-home"></i><span>Accueil</span></div>
+    <div class="menu-item" onclick="navigateTo('cardPage')" id="menuCard"><i class="fas fa-credit-card"></i><span>Carte</span></div>
+    <div class="menu-item" onclick="navigateTo('vaultPage')" id="menuVault"><i class="fas fa-box"></i><span>Coffre</span></div>
+    <div class="menu-item" onclick="navigateTo('depositPage')" id="menuDeposit"><i class="fas fa-download"></i><span>Dépôt</span></div>
+    <div class="menu-item" onclick="navigateTo('withdrawPage')" id="menuWithdraw"><i class="fas fa-upload"></i><span>Retrait</span></div>
+    <div class="menu-item" onclick="navigateTo('linksPage')" id="menuLinks"><i class="fas fa-link"></i><span>Liens</span></div>
+    <div class="menu-item" onclick="navigateTo('transferPage')" id="menuTransfer"><i class="fas fa-exchange-alt"></i><span>Transfert</span></div>
+    <div class="menu-item" onclick="navigateTo('formationsPage')" id="menuFormations"><i class="fas fa-graduation-cap"></i><span>Formations</span></div>
+    <div class="menu-item" onclick="navigateTo('historyPage')" id="menuHistory"><i class="fas fa-clock"></i><span>Historique</span></div>
+    <div class="menu-item" onclick="navigateTo('settingsPage')" id="menuSettings"><i class="fas fa-cog"></i><span>Réglage</span></div>
+</div>
+
+<div class="whatsapp-float" onclick="window.open('https://wa.me/22787379715', '_blank')"><i class="fab fa-whatsapp"></i></div>
+
+<!-- MODALES -->
+<div id="depositVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('depositVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>📥 Déposer dans le coffre</h2><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="vaultDepositAmount" placeholder="Ex: 50000"></div><button class="btn-primary" onclick="depositToVault()">Transférer</button></div></div>
+<div id="withdrawVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('withdrawVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>📤 Retirer du coffre</h2><div class="form-group"><label>Montant (FCFA)</label><input type="number" id="vaultWithdrawAmount" placeholder="Ex: 50000"></div><button class="btn-primary" onclick="withdrawFromVault()">Transférer</button></div></div>
+<div id="lockVaultModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('lockVaultModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>🔒 Verrouiller le coffre</h2><div class="form-group"><label>Date début</label><input type="date" id="lockStartDate"></div><div class="form-group"><label>Date fin</label><input type="date" id="lockEndDate"></div><button class="btn-danger" onclick="lockVault()">Verrouiller</button></div></div>
+<div id="kycModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('kycModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>🆔 Vérification KYC</h2><div class="form-group"><label>Type de pièce</label><select id="kycIdType"><option value="cni">CNI</option><option value="passeport">Passeport</option></select></div><div class="form-group"><label>Numéro</label><input type="text" id="kycIdNumber" placeholder="Numéro"></div><div class="form-group"><label>Photo recto</label><input type="file" id="kycPhotoFront" accept="image/*"></div><div class="form-group"><label>Photo verso</label><input type="file" id="kycPhotoBack" accept="image/*"></div><button class="btn-primary" onclick="submitKycRequest()">Envoyer</button></div></div>
+<div id="ticketModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('ticketModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>📩 Nouveau ticket</h2><div class="form-group"><label>Sujet</label><input type="text" id="ticketSubject" placeholder="Sujet"></div><div class="form-group"><label>Message</label><textarea id="ticketMessage" rows="4" placeholder="Décrivez votre problème..."></textarea></div><button class="btn-primary" onclick="createTicket()">Envoyer</button></div></div>
+<div id="budgetModal" class="modal"><div class="modal-content"><button class="btn-close" onclick="closeModal('budgetModal')" style="float:right; background:none; border:none; color:#fff; font-size:1.2rem;">&times;</button><h2>💰 Définir mon budget mensuel</h2><div class="form-group"><label>Budget total (FCFA)</label><input type="number" id="budgetTotalInput" placeholder="Ex: 500000"></div><div class="form-group"><label>Dépenses prévues (FCFA)</label><input type="number" id="budgetExpenseInput" placeholder="Ex: 200000"></div><button class="btn-primary" onclick="saveBudget()">Enregistrer</button></div></div>
+
+<script>
+    // ==================== BASE DE DONNÉES ====================
+    let DB = { users: [], withdrawals: [], vaults: [], vaultHistory: [], cards: [], devices: [], links: [], linkClicks: [], kycRequests: [], reminders: [], goals: [], budgets: [], transfers: [], tickets: [], announcements: [], rankings: [] };
+    let currentUser = null;
+    let currentReceipt = null;
+    let earningsChart = null;
+    
+    const ADMIN_WHATSAPP = "22787379715";
+    const FEE_PERCENT = 0.02;
+    const SPONSOR_BONUS = 500;
+    const SPONSOR_BONUS_LEVEL2 = 200;
+    
+    function loadData() {
+        DB.users = JSON.parse(localStorage.getItem('ba_users')) || [];
+        DB.withdrawals = JSON.parse(localStorage.getItem('ba_withdrawals')) || [];
+        DB.vaults = JSON.parse(localStorage.getItem('ba_vaults')) || [];
+        DB.vaultHistory = JSON.parse(localStorage.getItem('ba_vault_history')) || [];
+        DB.cards = JSON.parse(localStorage.getItem('ba_cards')) || [];
+        DB.devices = JSON.parse(localStorage.getItem('ba_devices')) || [];
+        DB.links = JSON.parse(localStorage.getItem('ba_links')) || [];
+        DB.linkClicks = JSON.parse(localStorage.getItem('ba_link_clicks')) || [];
+        DB.kycRequests = JSON.parse(localStorage.getItem('ba_kyc_requests')) || [];
+        DB.reminders = JSON.parse(localStorage.getItem('ba_reminders')) || [];
+        DB.goals = JSON.parse(localStorage.getItem('ba_goals')) || [];
+        DB.budgets = JSON.parse(localStorage.getItem('ba_budgets')) || [];
+        DB.transfers = JSON.parse(localStorage.getItem('ba_transfers')) || [];
+        DB.tickets = JSON.parse(localStorage.getItem('ba_tickets')) || [];
+        DB.announcements = JSON.parse(localStorage.getItem('ba_announcements')) || [];
+        DB.rankings = JSON.parse(localStorage.getItem('ba_rankings')) || [];
+        
+        if (!DB.users.some(u => u.email === 'admin@ads.com')) {
+            DB.users.push({ id: 'admin_1', username: 'Admin', email: 'admin@ads.com', password: 'admin123', waveNumber: '87379715', balance: 1000000, referralCode: 'REF-ADMIN', isAdmin: true, createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0, kycStatus: 'approved' });
+            saveData();
+        }
+        DB.users.forEach(u => { if (u.kycStatus === undefined) u.kycStatus = 'pending'; });
+        saveData();
+    }
+    
+    function saveData() {
+        localStorage.setItem('ba_users', JSON.stringify(DB.users));
+        localStorage.setItem('ba_withdrawals', JSON.stringify(DB.withdrawals));
+        localStorage.setItem('ba_vaults', JSON.stringify(DB.vaults));
+        localStorage.setItem('ba_vault_history', JSON.stringify(DB.vaultHistory));
+        localStorage.setItem('ba_cards', JSON.stringify(DB.cards));
+        localStorage.setItem('ba_devices', JSON.stringify(DB.devices));
+        localStorage.setItem('ba_links', JSON.stringify(DB.links));
+        localStorage.setItem('ba_link_clicks', JSON.stringify(DB.linkClicks));
+        localStorage.setItem('ba_kyc_requests', JSON.stringify(DB.kycRequests));
+        localStorage.setItem('ba_reminders', JSON.stringify(DB.reminders));
+        localStorage.setItem('ba_goals', JSON.stringify(DB.goals));
+        localStorage.setItem('ba_budgets', JSON.stringify(DB.budgets));
+        localStorage.setItem('ba_transfers', JSON.stringify(DB.transfers));
+        localStorage.setItem('ba_tickets', JSON.stringify(DB.tickets));
+        localStorage.setItem('ba_announcements', JSON.stringify(DB.announcements));
+        localStorage.setItem('ba_rankings', JSON.stringify(DB.rankings));
+    }
+    
+    loadData();
+    
+    // ==================== QR CODES ====================
+    function generateQRCodes() {
+        setTimeout(() => {
+            if(document.getElementById('qrWave')) new QRCode(document.getElementById('qrWave'), { text: 'https://wa.me/22787379715?text=Paiement%20Wave', width: 80, height: 80 });
+            if(document.getElementById('qrOrange')) new QRCode(document.getElementById('qrOrange'), { text: 'https://wa.me/22787379715?text=Paiement%20Orange', width: 80, height: 80 });
+            if(document.getElementById('qrMoov')) new QRCode(document.getElementById('qrMoov'), { text: 'https://wa.me/22787379715?text=Paiement%20Moov', width: 80, height: 80 });
+            if(document.getElementById('qrSoleasPay')) new QRCode(document.getElementById('qrSoleasPay'), { text: 'https://soleaspay.com/qr/pay/sb.html?l=ZnI=&a=MA==&d=QWZmaWxpYXRpb24g&m=dA==&c=WEFG&k=dW5UUVhrS1pfZ3BKOEZDcF9GMlhfNzRSX2dkNXV1ZHhPcjhybGVxYVRBUS1BUA==&s=QlVTSU5FU1MgQURTIA==&q=V0hCOUFQNkZJNQ==', width: 80, height: 80 });
+        }, 100);
+    }
+    
+    // ==================== AFFICHAGE ====================
+    function formatFCFA(amount) { return (amount || 0).toLocaleString() + ' FCFA'; }
+    function formatDate(iso) { let d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
+    
+    function showToast(msg, type) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function switchAuthTab(tab) {
+        if(tab === 'login') {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.querySelectorAll('.auth-tab')[0].classList.add('active');
+            document.querySelectorAll('.auth-tab')[1].classList.remove('active');
+        } else {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.querySelectorAll('.auth-tab')[1].classList.add('active');
+            document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+        }
+    }
+    
+    function navigateTo(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        const menuMap = { 
+            'homePage':'menuHome', 'cardPage':'menuCard', 'vaultPage':'menuVault', 
+            'depositPage':'menuDeposit', 'withdrawPage':'menuWithdraw', 'linksPage':'menuLinks',
+            'transferPage':'menuTransfer', 'formationsPage':'menuFormations', 'historyPage':'menuHistory', 
+            'settingsPage':'menuSettings', 'ticketsPage':null, 'rankingPage':null, 'announcementsPage':null, 
+            'qrCodePage':null, 'receiptPage':null, 'adminPage':null, 'accountPage':null
+        };
+        if(menuMap[pageId]) document.getElementById(menuMap[pageId]).classList.add('active');
+        if(pageId === 'homePage') updateHomePage();
+        if(pageId === 'cardPage') updateCardUI();
+        if(pageId === 'historyPage') loadHistory();
+        if(pageId === 'vaultPage') updateVaultUI();
+        if(pageId === 'withdrawPage') updateWithdrawPage();
+        if(pageId === 'depositPage') document.getElementById('depositBalance').textContent = formatFCFA(currentUser.balance);
+        if(pageId === 'linksPage') loadUserLinks();
+        if(pageId === 'transferPage') { document.getElementById('transferBalance').textContent = formatFCFA(currentUser.balance); loadTransfersHistory(); }
+        if(pageId === 'ticketsPage') loadTickets();
+        if(pageId === 'rankingPage') loadRanking();
+        if(pageId === 'announcementsPage') loadAnnouncements();
+        if(pageId === 'adminPage' && currentUser?.isAdmin) { loadAdminData(); loadKycRequestsAdmin(); loadAdminTickets(); }
+        updateBudgetDisplay();
+        updateEarningsChart();
+    }
+    
+    // ==================== GRAPHIQUE ====================
+    function updateEarningsChart() {
+        const ctx = document.getElementById('earningsChart')?.getContext('2d');
+        if(!ctx) return;
+        const last30Days = [];
+        const gains = [];
+        for(let i=29; i>=0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            last30Days.push(d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'}));
+            let dailyGain = Math.floor(Math.random() * 5000) + 500;
+            gains.push(dailyGain);
+        }
+        if(earningsChart) earningsChart.destroy();
+        earningsChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: last30Days, datasets: [{ label: 'Gains (FCFA)', data: gains, borderColor: '#4ecdc4', backgroundColor: 'rgba(78,205,196,0.1)', fill: true, tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#fff' } } } }
+        });
+    }
+    
+    // ==================== BUDGET ====================
+    function updateBudgetDisplay() {
+        const budget = DB.budgets.find(b => b.userId === currentUser?.id);
+        if(!budget) {
+            document.getElementById('budgetTotal').textContent = formatFCFA(0);
+            document.getElementById('budgetSpent').textContent = formatFCFA(0);
+            document.getElementById('budgetSaved').textContent = formatFCFA(0);
+            document.getElementById('budgetRemaining').textContent = '0%';
+            document.getElementById('budgetAdvice').textContent = 'Définissez';
+            document.getElementById('budgetProgress').style.width = '0%';
+            return;
+        }
+        const total = budget.total;
+        const spent = budget.spent || 0;
+        const saved = total - spent;
+        const percent = total > 0 ? Math.min((spent / total) * 100, 100) : 0;
+        document.getElementById('budgetTotal').textContent = formatFCFA(total);
+        document.getElementById('budgetSpent').textContent = formatFCFA(spent);
+        document.getElementById('budgetSaved').textContent = formatFCFA(saved);
+        document.getElementById('budgetRemaining').textContent = Math.round(100 - percent) + '%';
+        document.getElementById('budgetProgress').style.width = percent + '%';
+        if(percent > 80) document.getElementById('budgetAdvice').textContent = '⚠️ Attention';
+        else if(percent > 50) document.getElementById('budgetAdvice').textContent = '📉 Modéré';
+        else document.getElementById('budgetAdvice').textContent = '✅ Bon';
+    }
+    
+    function openBudgetModal() { document.getElementById('budgetModal').style.display = 'flex'; }
+    function saveBudget() {
+        const total = parseInt(document.getElementById('budgetTotalInput').value);
+        const expense = parseInt(document.getElementById('budgetExpenseInput').value);
+        if(isNaN(total) || total <= 0) { showToast("Budget invalide", 'error'); return; }
+        let budget = DB.budgets.find(b => b.userId === currentUser.id);
+        if(budget) { budget.total = total; budget.spent = expense; budget.updatedAt = new Date().toISOString(); }
+        else { DB.budgets.push({ userId: currentUser.id, total: total, spent: expense, createdAt: new Date().toISOString() }); }
+        saveData();
+        closeModal('budgetModal');
+        updateBudgetDisplay();
+        showToast("Budget enregistré !", 'success');
+    }
+    
+    // ==================== EXPORT CSV ====================
+    function exportToCSV() {
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id);
+        if(withdrawals.length === 0) { showToast("Aucune transaction à exporter", 'error'); return; }
+        let csv = "Date,Montant brut,Frais,Montant net,Téléphone,Statut\n";
+        withdrawals.forEach(w => { csv += `${new Date(w.date).toLocaleDateString('fr-FR')},${w.amount},${w.fees},${w.net},${w.phone},${w.status}\n`; });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `transactions_${currentUser.username}_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast("Export CSV terminé !", 'success');
+    }
+    
+    // ==================== AUTH ====================
+    function login(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPassword').value;
+        const user = DB.users.find(u => u.email === email && u.password === pwd);
+        if(!user) { showToast("Identifiants incorrects", 'error'); return; }
+        currentUser = user;
+        localStorage.setItem('currentUserId', user.id);
+        document.body.classList.add('logged-in');
+        DB.devices.push({ userId: user.id, device: navigator.userAgent, loginAt: new Date().toISOString() });
+        saveData();
+        document.getElementById('authPage').classList.remove('active');
+        document.getElementById('userInfoHeader').style.display = 'flex';
+        navigateTo('homePage');
+        updateHomePage();
+        generateQRCodes();
+        updateKYCStatus();
+        showToast(`Bienvenue ${user.username}`, 'success');
+    }
+    
+    function register(e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const wave = document.getElementById('regWaveNumber').value.trim();
+        const sponsorCode = document.getElementById('regSponsorCode').value.trim().toUpperCase();
+        if(DB.users.some(u => u.email === email)) { showToast("Email déjà utilisé", 'error'); return; }
+        let sponsorId = null, sponsorLevel2Id = null;
+        if(sponsorCode) {
+            const sponsor = DB.users.find(u => u.referralCode === sponsorCode);
+            if(sponsor) { sponsorId = sponsor.id; if(sponsor.sponsorId) sponsorLevel2Id = sponsor.sponsorId; }
+        }
+        const newUser = { id: 'user_' + Date.now(), username, email, password, waveNumber: wave, balance: 0,
+            referralCode: 'REF-' + Math.random().toString(36).substring(2,8).toUpperCase(),
+            sponsorId: sponsorId, sponsorLevel2Id: sponsorLevel2Id,
+            createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0, isAdmin: false, kycStatus: 'pending' };
+        DB.users.push(newUser);
+        if(sponsorId) { const s = DB.users.find(u => u.id === sponsorId); if(s) { s.balance += SPONSOR_BONUS; s.totalEarned += SPONSOR_BONUS; showToast(`+${SPONSOR_BONUS} FCFA pour ${s.username}`, 'success'); } }
+        if(sponsorLevel2Id) { const s2 = DB.users.find(u => u.id === sponsorLevel2Id); if(s2) { s2.balance += SPONSOR_BONUS_LEVEL2; s2.totalEarned += SPONSOR_BONUS_LEVEL2; showToast(`+${SPONSOR_BONUS_LEVEL2} FCFA pour ${s2.username}`, 'success'); } }
+        saveData();
+        showToast("Compte créé ! Connectez-vous.", 'success');
+        switchAuthTab('login');
+    }
+    
+    function logout() { currentUser = null; localStorage.removeItem('currentUserId'); document.body.classList.remove('logged-in'); location.reload(); }
+    
+    // ==================== PAGE ACCUEIL ====================
+    function updateHomePage() {
+        if(!currentUser) return;
+        document.getElementById('homeBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('homeTotalWithdrawn').textContent = formatFCFA(currentUser.totalWithdrawn || 0);
+        const referrals = DB.users.filter(u => u.sponsorId === currentUser.id);
+        document.getElementById('homeReferrals').textContent = referrals.length;
+        document.getElementById('homeReferralEarnings').textContent = formatFCFA(referrals.length * SPONSOR_BONUS);
+        document.getElementById('homeTotalEarnings').textContent = formatFCFA(currentUser.totalEarned || 0);
+        document.getElementById('referralCodeDisplay').textContent = currentUser.referralCode || '---';
+        document.getElementById('headerUsername').textContent = currentUser.username;
+        document.getElementById('headerBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('depositBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('transferBalance').textContent = formatFCFA(currentUser.balance);
+        updateVaultUI();
+        updateBudgetDisplay();
+    }
+    
+    function updateWithdrawPage() {
+        if(!currentUser) return;
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id).reverse();
+        const container = document.getElementById('withdrawHistoryList');
+        if(withdrawals.length === 0) { container.innerHTML = '<div class="empty-state">Aucun retrait</div>'; return; }
+        container.innerHTML = withdrawals.map(w => `<div class="history-item" onclick="showReceipt('${w.id}')"><div><small>${formatDate(w.date)}</small><br><strong>${formatFCFA(w.net)}</strong></div><div><span class="badge-success">Validé</span></div></div>`).join('');
+    }
+    
+    function loadHistory() {
+        if(!currentUser) return;
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id);
+        const container = document.getElementById('historyList');
+        if(withdrawals.length === 0) { container.innerHTML = '<div class="empty-state">Aucune transaction</div>'; return; }
+        container.innerHTML = withdrawals.map(t => `<div class="history-item" onclick="showReceipt('${t.id}')"><div><small>${formatDate(t.date)}</small><br><strong>Retrait</strong></div><div>${formatFCFA(t.net)}</div></div>`).join('');
+    }
+    
+    function showReceipt(transactionId) {
+        const transaction = DB.withdrawals.find(w => w.id === transactionId);
+        if(!transaction) return;
+        currentReceipt = transaction;
+        const user = DB.users.find(u => u.id === transaction.userId);
+        const receiptHTML = `
+            <div class="receipt-header"><h3>BUSINESS ADS</h3><p>Reçu de transaction</p></div>
+            <div class="receipt-row"><span>ID Transaction</span><span>${transaction.id}</span></div>
+            <div class="receipt-row"><span>Date</span><span>${formatDate(transaction.date)}</span></div>
+            <div class="receipt-row"><span>Type</span><span>Retrait</span></div>
+            <div class="receipt-row"><span>Montant envoyé</span><span>${formatFCFA(transaction.amount)}</span></div>
+            <div class="receipt-row"><span>Frais (2%)</span><span>${formatFCFA(transaction.fees)}</span></div>
+            <div class="receipt-row"><span>Montant reçu</span><span style="color:#00d25b;">${formatFCFA(transaction.net)}</span></div>
+            <div class="receipt-row"><span>Expéditeur</span><span>${user?.username}</span></div>
+            <div class="receipt-row"><span>Destinataire</span><span>${transaction.phone}</span></div>
+            <div class="receipt-row"><span>Statut</span><span class="receipt-status">✓ Effectué</span></div>
+        `;
+        document.getElementById('receiptContent').innerHTML = receiptHTML;
+        navigateTo('receiptPage');
+    }
+    
+    function printReceipt() {
+        const content = document.getElementById('receiptContent').innerHTML;
+        const win = window.open('', '_blank');
+        win.document.write(`<html><head><title>Reçu BUSINESS ADS</title><style>body{font-family:Arial;padding:20px;}</style></head><body>${content}</body></html>`);
+        win.document.close();
+        win.print();
+    }
+    
+    function emailReceipt() {
+        const transaction = currentReceipt;
+        if(!transaction) return;
+        const subject = `Reçu de transaction BUSINESS ADS - ${transaction.id}`;
+        const body = `Bonjour,\n\nVoici le reçu de votre transaction BUSINESS ADS :\n\nID: ${transaction.id}\nDate: ${formatDate(transaction.date)}\nMontant: ${formatFCFA(transaction.net)}\n\nCordialement,\nBUSINESS ADS`;
+        window.open(`mailto:${currentUser.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+        showToast("Email préparé", 'success');
+    }
+    
+    // ==================== CARTE VIRTUELLE ====================
+    function getUserCard() {
+        let card = DB.cards.find(c => c.userId === currentUser.id && c.isPrimary);
+        if (!card) {
+            card = { userId: currentUser.id, cardNumber: generateCardNumber(), cardHolder: currentUser.username.toUpperCase(), expiry: "12/28", cvv: Math.floor(Math.random() * 900 + 100), balance: 0, transactions: 0, spending: 0, isPrimary: true, createdAt: new Date().toISOString() };
+            DB.cards.push(card); saveData();
+        }
+        return card;
+    }
+    
+    function generateCardNumber() { let n = ''; for(let i=0;i<4;i++) n += Math.floor(Math.random() * 9000 + 1000) + (i<3 ? ' ' : ''); return n; }
+    function updateCardUI() {
+        const card = getUserCard();
+        document.getElementById('cardNumberDisplay').textContent = card.cardNumber;
+        document.getElementById('cardHolderName').textContent = card.cardHolder;
+        document.getElementById('cardExpiry').textContent = card.expiry;
+        document.getElementById('cardCVV').textContent = card.cvv;
+        document.getElementById('cardBalance').textContent = formatFCFA(card.balance);
+        document.getElementById('cardTransactions').textContent = card.transactions || 0;
+        document.getElementById('cardSpending').textContent = formatFCFA(card.spending || 0);
+        const otherCards = DB.cards.filter(c => c.userId === currentUser.id && !c.isPrimary);
+        const container = document.getElementById('cardsList');
+        if(otherCards.length === 0) container.innerHTML = '<div class="empty-state">Aucune autre carte</div>';
+        else container.innerHTML = otherCards.map(c => `<div class="card-item"><div><i class="fas fa-credit-card"></i> •••• ${c.cardNumber.slice(-4)}</div><button class="btn-copy" onclick="deleteCard('${c.id}')">Supprimer</button></div>`).join('');
+    }
+    
+    function copyCardNumber() { const card = getUserCard(); navigator.clipboard.writeText(card.cardNumber.replace(/ /g, '')); showToast("Numéro copié", 'success'); }
+    function generateNewCard() { DB.cards.push({ id: Date.now().toString(), userId: currentUser.id, cardNumber: generateCardNumber(), cardHolder: currentUser.username.toUpperCase(), expiry: "12/28", cvv: Math.floor(Math.random() * 900 + 100), balance: 0, transactions: 0, spending: 0, isPrimary: false, createdAt: new Date().toISOString() }); saveData(); updateCardUI(); showToast("Nouvelle carte ajoutée", 'success'); }
+    function deleteCard(id) { DB.cards = DB.cards.filter(c => c.id !== id); saveData(); updateCardUI(); showToast("Carte supprimée", 'success'); }
+    function transferToCard() {
+        let amount = prompt("Montant à transférer (FCFA) :");
+        if(!amount) return;
+        amount = parseInt(amount);
+        if(isNaN(amount) || amount <= 0) { showToast("Montant invalide", 'error'); return; }
+        if(amount > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        currentUser.balance -= amount;
+        const card = getUserCard();
+        card.balance += amount;
+        card.transactions++;
+        card.spending += amount;
+        saveData();
+        updateHomePage();
+        updateCardUI();
+        showToast(`${formatFCFA(amount)} transféré vers la carte`, 'success');
+    }
+    
+    // ==================== LIENS D'AFFILIATION ====================
+    function createAffiliateLink() {
+        const name = document.getElementById('linkProductName').value.trim();
+        const url = document.getElementById('linkDestination').value.trim();
+        const commission = parseInt(document.getElementById('linkCommission').value);
+        if(!name || !url) { showToast("Remplissez tous les champs", 'error'); return; }
+        DB.links.push({ id: 'link_' + Date.now() + '_' + Math.random().toString(36).substring(2,6), userId: currentUser.id, productName: name, url: url, commission: commission, clicks: 0, earnings: 0, active: true, createdAt: new Date().toISOString() });
+        saveData();
+        document.getElementById('linkProductName').value = '';
+        document.getElementById('linkDestination').value = '';
+        loadUserLinks();
+        showToast("Lien créé !", 'success');
+    }
+    
+    function loadUserLinks() {
+        const links = DB.links.filter(l => l.userId === currentUser.id);
+        const container = document.getElementById('userLinksList');
+        const totalClicks = links.reduce((s,l) => s + (l.clicks||0), 0);
+        const totalEarnings = links.reduce((s,l) => s + (l.earnings||0), 0);
+        document.getElementById('totalClicks').textContent = totalClicks;
+        document.getElementById('totalLinkEarnings').textContent = formatFCFA(totalEarnings);
+        if(links.length === 0) { container.innerHTML = '<div class="empty-state">Aucun lien</div>'; return; }
+        const baseUrl = window.location.href.split('?')[0];
+        container.innerHTML = links.map(l => `<div class="link-card"><strong>${l.productName}</strong><div class="link-url">${baseUrl}?ref=${l.id}</div><div>Clics: ${l.clicks||0} | Gains: ${formatFCFA(l.earnings||0)}</div><button class="btn-copy" onclick="copyLink('${baseUrl}?ref=${l.id}')">Copier</button> <button class="btn-copy" onclick="shareLink('${baseUrl}?ref=${l.id}')">Partager</button></div>`).join('');
+    }
+    
+    function copyLink(url) { navigator.clipboard.writeText(url); showToast("Lien copié", 'success'); }
+    function shareLink(url) { window.open(`https://wa.me/?text=${encodeURIComponent("Rejoignez BUSINESS ADS : " + url)}`, '_blank'); }
+    
+    // ==================== TRANSFERT ====================
+    function sendTransfer() {
+        const email = document.getElementById('transferEmail').value.trim();
+        const amount = parseInt(document.getElementById('transferAmount').value);
+        const message = document.getElementById('transferMessage').value.trim();
+        if(!email || isNaN(amount) || amount < 1000) { showToast("Email ou montant invalide", 'error'); return; }
+        if(amount > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        const recipient = DB.users.find(u => u.email === email);
+        if(!recipient) { showToast("Destinataire non trouvé", 'error'); return; }
+        currentUser.balance -= amount;
+        recipient.balance += amount;
+        DB.transfers.push({ id: 'trf_' + Date.now(), fromUserId: currentUser.id, toUserId: recipient.id, amount: amount, message: message, date: new Date().toISOString() });
+        saveData();
+        updateHomePage();
+        loadTransfersHistory();
+        showToast(`Transfert de ${formatFCFA(amount)} à ${recipient.username} effectué`, 'success');
+        document.getElementById('transferAmount').value = '';
+        document.getElementById('transferMessage').value = '';
+        showNotification(`${currentUser.username} vous a envoyé ${formatFCFA(amount)}`, recipient.id);
+    }
+    
+    function loadTransfersHistory() {
+        const sent = DB.transfers.filter(t => t.fromUserId === currentUser.id);
+        const received = DB.transfers.filter(t => t.toUserId === currentUser.id);
+        const all = [...sent.map(t => ({...t, type: 'Envoyé', other: DB.users.find(u=>u.id===t.toUserId)?.username})), 
+                     ...received.map(t => ({...t, type: 'Reçu', other: DB.users.find(u=>u.id===t.fromUserId)?.username}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+        const container = document.getElementById('transfersList');
+        if(all.length === 0) { container.innerHTML = '<div class="empty-state">Aucun transfert</div>'; return; }
+        container.innerHTML = all.map(t => `<div class="history-item"><div><small>${formatDate(t.date)}</small><br>${t.type} à ${t.other}<br>${formatFCFA(t.amount)}</div></div>`).join('');
+    }
+    
+    // ==================== CLASSEMENT ====================
+    function loadRanking() {
+        const users = DB.users.filter(u => !u.isAdmin);
+        const ranking = users.map(u => ({ username: u.username, referrals: DB.users.filter(r => r.sponsorId === u.id).length, earnings: u.totalEarned || 0 })).sort((a,b) => b.referrals - a.referrals).slice(0,10);
+        const container = document.getElementById('rankingList');
+        if(ranking.length === 0) { container.innerHTML = '<div class="empty-state">Aucun classement</div>'; return; }
+        container.innerHTML = ranking.map((r, i) => `<div class="ranking-item"><div><strong>${i+1}. ${r.username}</strong><br><small>${r.referrals} filleuls</small></div><div class="${i===0?'badge-gold':i===1?'badge-silver':'badge-success'}">${formatFCFA(r.earnings)}</div></div>`).join('');
+    }
+    
+    // ==================== TICKETS SUPPORT ====================
+    function openTicketModal() { document.getElementById('ticketModal').style.display = 'flex'; }
+    function createTicket() {
+        const subject = document.getElementById('ticketSubject').value.trim();
+        const message = document.getElementById('ticketMessage').value.trim();
+        if(!subject || !message) { showToast("Remplissez tous les champs", 'error'); return; }
+        DB.tickets.push({ id: 'tkt_' + Date.now(), userId: currentUser.id, username: currentUser.username, subject: subject, message: message, status: 'open', replies: [], createdAt: new Date().toISOString() });
+        saveData();
+        closeModal('ticketModal');
+        document.getElementById('ticketSubject').value = '';
+        document.getElementById('ticketMessage').value = '';
+        loadTickets();
+        showToast("Ticket envoyé !", 'success');
+        if(currentUser?.isAdmin) loadAdminTickets();
+    }
+    
+    function loadTickets() {
+        const tickets = DB.tickets.filter(t => t.userId === currentUser.id).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+        const container = document.getElementById('ticketsList');
+        if(tickets.length === 0) { container.innerHTML = '<div class="empty-state">Aucun ticket</div>'; return; }
+        container.innerHTML = tickets.map(t => `<div class="ticket-item"><div><strong>${t.subject}</strong><br><small>${formatDate(t.createdAt)}</small><br><span class="${t.status==='open'?'badge-pending':'badge-success'}">${t.status==='open'?'En attente':'Fermé'}</span></div><button class="btn-copy" onclick="viewTicket('${t.id}')">Voir</button></div>`).join('');
+    }
+    
+    function viewTicket(id) {
+        const ticket = DB.tickets.find(t => t.id === id);
+        if(!ticket) return;
+        let msg = `📩 TICKET: ${ticket.subject}\n\n${ticket.message}\n\nDate: ${formatDate(ticket.createdAt)}\nStatut: ${ticket.status}\n`;
+        ticket.replies.forEach(r => { msg += `\n${r.fromAdmin ? '📌 ADMIN' : '👤 VOUS'} (${formatDate(r.date)}): ${r.message}`; });
+        showToast(msg, 'info');
+    }
+    
+    function loadAdminTickets() {
+        if(!currentUser?.isAdmin) return;
+        const openTickets = DB.tickets.filter(t => t.status === 'open');
+        const container = document.getElementById('adminTicketsList');
+        if(openTickets.length === 0) { container.innerHTML = '<div class="empty-state">Aucun ticket en attente</div>'; return; }
+        container.innerHTML = openTickets.map(t => `<div class="ticket-item"><div><strong>${t.subject}</strong><br><small>${t.username} - ${formatDate(t.createdAt)}</small></div><div><button class="btn-copy" onclick="replyToTicket('${t.id}')">Répondre</button> <button class="btn-copy" onclick="closeTicketAdmin('${t.id}')">Fermer</button></div></div>`).join('');
+        document.getElementById('adminTicketsSection').style.display = 'block';
+    }
+    
+    function replyToTicket(id) {
+        const reply = prompt("Votre réponse :");
+        if(!reply) return;
+        const ticket = DB.tickets.find(t => t.id === id);
+        if(ticket) { ticket.replies.push({ fromAdmin: true, message: reply, date: new Date().toISOString() }); saveData(); loadAdminTickets(); showToast("Réponse envoyée", 'success'); }
+    }
+    
+    function closeTicketAdmin(id) {
+        const ticket = DB.tickets.find(t => t.id === id);
+        if(ticket) { ticket.status = 'closed'; saveData(); loadAdminTickets(); showToast("Ticket fermé", 'success'); }
+    }
+    
+    // ==================== ANNONCES ====================
+    function loadAnnouncements() {
+        const announcements = DB.announcements.sort((a,b)=>new Date(b.date)-new Date(a.date));
+        const container = document.getElementById('announcementsList');
+        if(announcements.length === 0) { container.innerHTML = '<div class="empty-state">Aucune annonce</div>'; return; }
+        container.innerHTML = announcements.map(a => `<div class="announcement-item"><div><strong>${a.title}</strong><br><small>${formatDate(a.date)}</small><p style="margin-top:5px;">${a.message}</p></div></div>`).join('');
+        if(currentUser?.isAdmin) document.getElementById('adminAnnouncementSection').style.display = 'block';
+    }
+    
+    function sendAnnouncement() {
+        const message = document.getElementById('newAnnouncement').value.trim();
+        if(!message) { showToast("Écrivez une annonce", 'error'); return; }
+        DB.announcements.push({ id: 'ann_' + Date.now(), title: 'Nouvelle annonce', message: message, date: new Date().toISOString(), fromAdmin: true });
+        saveData();
+        document.getElementById('newAnnouncement').value = '';
+        loadAnnouncements();
+        showToast("Annonce publiée", 'success');
+        DB.users.forEach(u => { if(!u.isAdmin) showNotification("📢 Nouvelle annonce: " + message.substring(0,50), u.id); });
+    }
+    
+    function sendGlobalAnnouncement() {
+        const message = document.getElementById('adminAnnouncement').value.trim();
+        if(!message) { showToast("Écrivez un message", 'error'); return; }
+        DB.announcements.push({ id: 'ann_' + Date.now(), title: 'Annonce importante', message: message, date: new Date().toISOString(), fromAdmin: true });
+        saveData();
+        document.getElementById('adminAnnouncement').value = '';
+        loadAnnouncements();
+        showToast("Annonce envoyée à tous", 'success');
+        DB.users.forEach(u => { if(!u.isAdmin) showNotification("📢 Nouvelle annonce de l'admin", u.id); });
+    }
+    
+    // ==================== NOTIFICATION ====================
+    function showNotification(message, userId) {
+        const user = DB.users.find(u => u.id === userId);
+        if(user && user.isLoggedIn) showToast(message, 'info');
+        console.log(`Notification pour ${user?.username}: ${message}`);
+    }
+    
+    // ==================== COFFRE-FORT ====================
+    function getVault() {
+        let vault = DB.vaults.find(v => v.userId === currentUser.id);
+        if(!vault) { vault = { userId: currentUser.id, amount: 0, isLocked: false, lockStartDate: null, lockEndDate: null }; DB.vaults.push(vault); saveData(); }
+        return vault;
+    }
+    
+    function updateVaultUI() {
+        const vault = getVault();
+        const now = new Date();
+        if(vault.isLocked && vault.lockEndDate && new Date(vault.lockEndDate) <= now) { vault.isLocked = false; vault.lockStartDate = null; vault.lockEndDate = null; saveData(); }
+        const updated = getVault();
+        document.getElementById('vaultDetailAmount').innerHTML = formatFCFA(updated.amount);
+        const status = document.getElementById('vaultDetailStatus');
+        const lockInfo = document.getElementById('vaultDetailLockInfo');
+        if(updated.isLocked) {
+            status.className = 'vault-status status-locked';
+            status.innerHTML = '🔒 Verrouillé';
+            lockInfo.style.display = 'block';
+            lockInfo.innerHTML = `Début: ${new Date(updated.lockStartDate).toLocaleDateString('fr-FR')}<br>Déblocage: ${new Date(updated.lockEndDate).toLocaleDateString('fr-FR')}`;
+        } else {
+            status.className = 'vault-status status-unlocked';
+            status.innerHTML = '🔓 Déverrouillé';
+            lockInfo.style.display = 'none';
+        }
+        loadVaultHistory();
+    }
+    
+    function openDepositVault() { document.getElementById('depositVaultModal').style.display = 'flex'; }
+    function openWithdrawVault() { document.getElementById('withdrawVaultModal').style.display = 'flex'; }
+    function openLockVault() {
+        const vault = getVault();
+        if(vault.amount === 0) { showToast("Coffre vide", 'error'); return; }
+        document.getElementById('lockStartDate').value = new Date().toISOString().split('T')[0];
+        let next = new Date(); next.setMonth(next.getMonth() + 1);
+        document.getElementById('lockEndDate').value = next.toISOString().split('T')[0];
+        document.getElementById('lockVaultModal').style.display = 'flex';
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
+    function depositToVault() {
+        const amount = parseInt(document.getElementById('vaultDepositAmount').value);
+        if(isNaN(amount) || amount <= 0) { showToast("Montant invalide", 'error'); return; }
+        if(amount > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouillé", 'error'); return; }
+        currentUser.balance -= amount;
+        vault.amount += amount;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'deposit', amount: amount, date: new Date().toISOString() });
+        saveData();
+        closeModal('depositVaultModal');
+        document.getElementById('vaultDepositAmount').value = '';
+        updateHomePage();
+        showToast(`${formatFCFA(amount)} transféré vers le coffre`, 'success');
+    }
+    
+    function withdrawFromVault() {
+        const amount = parseInt(document.getElementById('vaultWithdrawAmount').value);
+        if(isNaN(amount) || amount <= 0) { showToast("Montant invalide", 'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouillé", 'error'); return; }
+        if(amount > vault.amount) { showToast("Montant supérieur", 'error'); return; }
+        vault.amount -= amount;
+        currentUser.balance += amount;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'withdraw', amount: amount, date: new Date().toISOString() });
+        saveData();
+        closeModal('withdrawVaultModal');
+        document.getElementById('vaultWithdrawAmount').value = '';
+        updateHomePage();
+        showToast(`${formatFCFA(amount)} transféré vers le solde principal`, 'success');
+    }
+    
+    function lockVault() {
+        const start = document.getElementById('lockStartDate').value;
+        const end = document.getElementById('lockEndDate').value;
+        if(!start || !end) { showToast("Choisissez les dates", 'error'); return; }
+        if(new Date(end) <= new Date(start)) { showToast("Date fin après début", 'error'); return; }
+        const vault = getVault();
+        vault.isLocked = true;
+        vault.lockStartDate = start;
+        vault.lockEndDate = end;
+        DB.vaultHistory.unshift({ id: 'vh_'+Date.now(), userId: currentUser.id, type: 'lock', amount: vault.amount, startDate: start, endDate: end, date: new Date().toISOString() });
+        saveData();
+        closeModal('lockVaultModal');
+        updateVaultUI();
+        showToast(`🔒 Coffre verrouillé jusqu'au ${new Date(end).toLocaleDateString('fr-FR')}`, 'success');
+    }
+    
+    function loadVaultHistory() {
+        const history = DB.vaultHistory.filter(h => h.userId === currentUser.id).slice(0,20);
+        const container = document.getElementById('vaultHistoryList');
+        if(!container) return;
+        if(history.length === 0) { container.innerHTML = '<div class="empty-state">Aucune opération</div>'; return; }
+        container.innerHTML = history.map(h => `<div class="history-item"><div><small>${formatDate(h.date)}</small><br><strong>${h.type === 'deposit' ? '📥 Dépôt' : (h.type === 'withdraw' ? '📤 Retrait' : '🔒 Verrouillage')}</strong></div><div>${h.type === 'lock' ? h.startDate : formatFCFA(h.amount)}</div></div>`).join('');
+    }
+    
+    // ==================== KYC ====================
+    function updateKYCStatus() {
+        const status = currentUser.kycStatus || 'pending';
+        const badge = document.getElementById('kycStatusBadge');
+        const content = document.getElementById('kycContent');
+        if(status === 'approved') {
+            badge.innerHTML = '<span class="badge-success">✓ Vérifié</span>';
+            content.innerHTML = '<p>✅ Identité vérifiée. Retraits autorisés.</p>';
+        } else if(status === 'rejected') {
+            badge.innerHTML = '<span class="badge-pending">❌ Rejeté</span>';
+            content.innerHTML = '<p>❌ Identité rejetée. <button class="btn-primary" onclick="openKycModal()">Nouvelle demande</button></p>';
+        } else {
+            badge.innerHTML = '<span class="badge-pending">⏳ En attente</span>';
+            content.innerHTML = '<p>⏳ Vérification en cours. <button class="btn-copy" onclick="openKycModal()">Modifier</button></p>';
+        }
+    }
+    
+    function openKycModal() { document.getElementById('kycModal').style.display = 'flex'; }
+    
+    function submitKycRequest() {
+        const type = document.getElementById('kycIdType').value;
+        const number = document.getElementById('kycIdNumber').value.trim();
+        const front = document.getElementById('kycPhotoFront').files[0];
+        const back = document.getElementById('kycPhotoBack').files[0];
+        if(!number || !front || !back) { showToast("Remplissez tous les champs", 'error'); return; }
+        const fr = new FileReader(); const br = new FileReader();
+        fr.onload = function() { br.onload = function() {
+            const existing = DB.kycRequests.find(r => r.userId === currentUser.id);
+            if(existing) { existing.idType = type; existing.idNumber = number; existing.photoFront = fr.result; existing.photoBack = br.result; existing.status = 'pending'; existing.submittedAt = new Date().toISOString(); }
+            else { DB.kycRequests.push({ id: 'kyc_' + Date.now(), userId: currentUser.id, username: currentUser.username, email: currentUser.email, idType: type, idNumber: number, photoFront: fr.result, photoBack: br.result, status: 'pending', submittedAt: new Date().toISOString() }); }
+            currentUser.kycStatus = 'pending';
+            saveData();
+            closeModal('kycModal');
+            updateKYCStatus();
+            showToast("Demande envoyée", 'success');
+            window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=🆔 Nouvelle demande KYC: ${currentUser.username}`, '_blank');
+        }; br.readAsDataURL(back); }; fr.readAsDataURL(front);
+    }
+    
+    function loadKycRequestsAdmin() {
+        if(!currentUser?.isAdmin) return;
+        const pending = DB.kycRequests.filter(r => r.status === 'pending');
+        document.getElementById('pendingKycCount').textContent = pending.length;
+        const container = document.getElementById('kycRequestsList');
+        if(pending.length === 0) { container.innerHTML = '<div class="empty-state">Aucune demande</div>'; return; }
+        container.innerHTML = pending.map(req => `<div class="history-item"><div><strong>${req.username}</strong><br><small>${req.email}</small><br><small>${req.idType} - ${req.idNumber}</small></div><div><button class="btn-copy" onclick="viewKycPhoto('${req.photoFront}')">Recto</button><button class="btn-copy" onclick="viewKycPhoto('${req.photoBack}')">Verso</button><button class="btn-primary" onclick="approveKyc('${req.id}')" style="background:#00d25b;">Approuver</button><button class="btn-danger" onclick="rejectKyc('${req.id}')">Rejeter</button></div></div>`).join('');
+    }
+    
+    function viewKycPhoto(photo) { const m = document.createElement('div'); m.className = 'modal'; m.style.display = 'flex'; m.innerHTML = `<div class="modal-content"><button class="btn-close" onclick="this.parentElement.parentElement.remove()">&times;</button><img src="${photo}" style="max-width:100%"></div>`; document.body.appendChild(m); }
+    function approveKyc(id) { const req = DB.kycRequests.find(r => r.id === id); if(req) { req.status = 'approved'; req.approvedAt = new Date().toISOString(); const user = DB.users.find(u => u.id === req.userId); if(user) user.kycStatus = 'approved'; saveData(); loadKycRequestsAdmin(); updateKYCStatus(); showToast(`KYC approuvé pour ${req.username}`, 'success'); } }
+    function rejectKyc(id) { const reason = prompt("Motif du rejet :"); if(!reason) return; const req = DB.kycRequests.find(r => r.id === id); if(req) { req.status = 'rejected'; req.rejectionReason = reason; req.rejectedAt = new Date().toISOString(); const user = DB.users.find(u => u.id === req.userId); if(user) user.kycStatus = 'rejected'; saveData(); loadKycRequestsAdmin(); updateKYCStatus(); showToast(`KYC rejeté pour ${req.username}`, 'success'); } }
+    
+    // ==================== DÉPÔT ====================
+    function setDepositAmount(amount) { document.getElementById('depositAmount').value = amount; }
+    function initiateDeposit() {
+        let amount = parseInt(document.getElementById('depositAmount').value);
+        if(amount < 5000) { showToast("Minimum 5 000 FCFA", 'error'); return; }
+        const code = 'DEP-' + Math.random().toString(36).substring(2,8).toUpperCase();
+        showToast(`Envoyez ${formatFCFA(amount)} à 87379715. Code: ${code}`, 'success');
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Dépôt%20${amount}%20FCFA%20par%20${currentUser.username}%20Code:%20${code}`, '_blank');
+    }
+    
+    // ==================== RETRAIT ====================
+    function updatePreview() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+        let fees = Math.round(a * FEE_PERCENT);
+        document.getElementById('previewFees').textContent = formatFCFA(fees);
+        document.getElementById('previewNet').textContent = formatFCFA(a - fees);
+    }
+    
+    function confirmWithdraw() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value);
+        let phone = document.getElementById('withdrawPhone').value.trim();
+        if(a < 10000 || a > 500000 || !phone) { showToast("Montant invalide", 'error'); return; }
+        if(a > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        if(currentUser.kycStatus !== 'approved') { showToast("Vérifiez d'abord votre identité (KYC)", 'error'); return; }
+        let fees = Math.round(a * FEE_PERCENT);
+        let net = a - fees;
+        currentUser.balance -= a;
+        currentUser.totalWithdrawn = (currentUser.totalWithdrawn || 0) + net;
+        const txId = 'WDR-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
+        DB.withdrawals.push({ id: txId, userId: currentUser.id, phone: phone, amount: a, fees: fees, net: net, status: 'completed', date: new Date().toISOString() });
+        const admin = DB.users.find(u => u.isAdmin);
+        if(admin && currentUser.id !== admin.id) { admin.balance += fees; admin.totalEarned += fees; }
+        saveData();
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawPhone').value = '';
+        updatePreview();
+        updateHomePage();
+        updateWithdrawPage();
+        showToast(`Retrait de ${formatFCFA(net)} validé`, 'success');
+        showReceipt(txId);
+        navigateTo('receiptPage');
+    }
+    
+    function copyReferralCode() { navigator.clipboard.writeText(currentUser.referralCode); showToast("Code copié", 'success'); }
+    
+    // ==================== ADMIN ====================
+    function loadAdminData() {
+        if(!currentUser?.isAdmin) return;
+        const totalUsers = DB.users.filter(u => !u.isAdmin).length;
+        const totalWithdrawals = DB.withdrawals.reduce((s,w) => s + w.net, 0);
+        const totalCommissions = DB.withdrawals.reduce((s,w) => s + w.fees, 0);
+        document.getElementById('totalUsers').textContent = totalUsers;
+        document.getElementById('totalWithdrawals').textContent = formatFCFA(totalWithdrawals);
+        document.getElementById('totalCommissions').textContent = formatFCFA(totalCommissions);
+        const usersList = DB.users.filter(u => !u.isAdmin);
+        document.getElementById('usersListAdmin').innerHTML = usersList.map(u => `<div class="history-item"><div><strong>${u.username}</strong><br><small>${u.email}</small><br><small>KYC: ${u.kycStatus === 'approved' ? '✓' : '⏳'}</small></div><div>${formatFCFA(u.balance)}</div></div>`).join('');
+    }
+    
+    // ==================== RÉGLAGES ====================
+    function showDataDefinitions() { showToast("📊 DÉFINITIONS\n\n• N1: Filleul direct (500 FCFA)\n• N2: Filleul indirect (200 FCFA)\n• KYC: Vérification identité", 'info'); }
+    function showAboutCompany() { showToast("📱 BUSINESS ADS\nPlateforme d'affiliation - Niger\n📍 Niamey\n📞 +227 87 37 97 15", 'info'); }
+    function showTermsAndConditions() { showToast("📜 CONDITIONS\n\n1. Inscription gratuite\n2. Parrainage: 500/200 FCFA\n3. Retrait min: 10 000 FCFA\n4. Frais: 2%\n5. KYC obligatoire", 'info'); }
+    function showCardsList() { navigateTo('cardPage'); }
+    function showReferralsList() { const refs = DB.users.filter(u => u.sponsorId === currentUser.id); if(refs.length===0) showToast("Aucun parrainage", 'info'); else showToast(`👥 ${refs.length} filleul(s)`, 'info'); }
+    function showHelpCenter() { showToast("❓ AIDE\n\nQuestions? Contactez le support WhatsApp", 'info'); }
+    function showContactUs() { showToast("📞 CONTACT\n\nWhatsApp: +227 87 37 97 15\nEmail: businessads.niger@gmail.com", 'info'); }
+    function showPaymentQRCodes() { navigateTo('qrCodePage'); generateQRCodes(); }
+    function showAdminPanel() { if(currentUser?.isAdmin) navigateTo('adminPage'); else showToast("Accès réservé à l'admin", 'error'); }
+    function addAnotherAccount() { showToast("Fonctionnalité à venir", 'info'); }
+    function showConnectedDevices() { const devices = DB.devices.filter(d => d.userId === currentUser.id); showToast(`📱 ${devices.length} connexion(s)`, 'info'); }
+    function changeSecretCode() { showToast("Contactez l'admin", 'info'); }
+    function showSecuritySettings() { showToast("🔐 Sécurité: 2FA bientôt disponible", 'info'); }
+    
+    // ==================== THEME ====================
+    function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
+    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    
+    // ==================== INIT ====================
+    function restoreSession() {
+        const saved = localStorage.getItem('currentUserId');
+        if(saved) {
+            const user = DB.users.find(u => u.id === saved);
+            if(user) {
+                currentUser = user;
+                document.body.classList.add('logged-in');
+                document.getElementById('userInfoHeader').style.display = 'flex';
+                navigateTo('homePage');
+                updateHomePage();
+                generateQRCodes();
+                updateKYCStatus();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    if(!restoreSession()) { document.getElementById('authPage').classList.add('active'); document.getElementById('userInfoHeader').style.display = 'none'; }
+    else { generateQRCodes(); }
+</script>
+</body>
+</html>
