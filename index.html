@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>BUSINESS ADS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 70px;
+        }
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9eef5 100%);
+            color: #1e2a5e;
+        }
+        body.light-mode .top-nav, body.light-mode .bottom-menu {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.1);
+        }
+        body.light-mode .section, body.light-mode .balance-card, body.light-mode .virtual-card, body.light-mode .vault-card {
+            background: rgba(0,0,0,0.05);
+        }
+        .top-nav {
+            background: rgba(10,14,39,0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+        .logo h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo p { font-size: 0.55rem; color: #aaa; }
+        .user-info { display: flex; align-items: center; gap: 12px; background: rgba(78,205,196,0.15); padding: 6px 15px; border-radius: 50px; }
+        .balance { color: #4ecdc4; font-weight: bold; font-size: 0.8rem; }
+        .theme-toggle { cursor: pointer; background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; }
+        .notification-badge { position: relative; cursor: pointer; }
+        .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10,14,39,0.98);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 8px 18px;
+            border-top: 1px solid rgba(78,205,196,0.2);
+            z-index: 100;
+            flex-wrap: wrap;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        }
+        body.logged-in .bottom-menu { display: flex; }
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 40px;
+            color: #aaa;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            min-width: 60px;
+        }
+        .menu-item i { font-size: 22px; transition: all 0.3s ease; }
+        .menu-item span { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; opacity: 0.8; }
+        .menu-item:hover {
+            background: linear-gradient(135deg, rgba(78,205,196,0.2), rgba(255,107,107,0.1));
+            transform: translateY(-3px);
+            color: #fff;
+        }
+        .menu-item:hover i { transform: scale(1.15); color: #4ecdc4; }
+        .menu-item.active {
+            background: linear-gradient(135deg, #4ecdc4, #ff6b6b);
+            color: white;
+            box-shadow: 0 5px 15px rgba(78,205,196,0.4);
+        }
+        .menu-item.active i { transform: scale(1.1); }
+        .menu-item:active { transform: scale(0.95); transition: all 0.05s ease; }
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .section-header h2 { font-size: 1rem; color: #4ecdc4; }
+        .balances-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .balance-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+        }
+        .balance-card .amount {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-card .value { font-size: 1.1rem; font-weight: bold; color: #4ecdc4; }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        .btn-secondary {
+            background: rgba(78,205,196,0.2);
+            color: #4ecdc4;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        .btn-danger {
+            background: rgba(255,71,87,0.2);
+            color: #ff4757;
+            padding: 10px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+        .btn-copy {
+            background: rgba(78,205,196,0.15);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #4ecdc4;
+            font-size: 0.7rem;
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.7rem; color: #aaa; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+        .history-item, .setting-item, .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+        .setting-item:hover { color: #4ecdc4; }
+        .badge-success { background: rgba(0,210,91,0.2); color: #00d25b; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        .badge-pending { background: rgba(255,193,7,0.2); color: #ffc107; padding: 3px 8px; border-radius: 15px; font-size: 0.65rem; }
+        .empty-state { text-align: center; padding: 30px; color: #888; font-size: 0.85rem; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1f3a;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e66;
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 1100;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 80px;
+            right: 15px;
+            background-color: #25D366;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            cursor: pointer;
+        }
+        .whatsapp-float i { font-size: 26px; color: white; }
+        .qr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .qr-card { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 12px; text-align: center; }
+        .qr-card canvas { margin: 0 auto; }
+        .video-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        .video-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; transition: transform 0.2s; }
+        .video-card:hover { transform: translateY(-3px); background: rgba(78,205,196,0.1); }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .virtual-card {
+            background: linear-gradient(135deg, #1a1f3a, #0f172a);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(78,205,196,0.3);
+        }
+        .card-chip { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .card-chip i:first-child { font-size: 1.8rem; color: #ffc107; }
+        .card-chip i:last-child { font-size: 1.8rem; }
+        .card-number { font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin: 12px 0; font-weight: 600; }
+        .card-details { display: flex; justify-content: space-between; margin-top: 15px; }
+        .vault-card {
+            background: linear-gradient(135deg, #1a1f3a, #0f172a);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 2px solid #ffc107;
+        }
+        .vault-amount { font-size: 1.6rem; font-weight: bold; color: #ffc107; text-align: center; margin: 10px 0; }
+        .vault-status { text-align: center; padding: 8px; border-radius: 10px; margin: 10px 0; font-size: 0.8rem; }
+        .status-locked { background: rgba(255,71,87,0.2); color: #ff4757; }
+        .status-unlocked { background: rgba(0,210,91,0.2); color: #00d25b; }
+        .vault-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .progress-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { background: #4ecdc4; height: 100%; border-radius: 10px; transition: width 0.3s; }
+        canvas { max-height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; margin-top: 10px; }
+        @media (max-width: 550px) {
+            .bottom-menu { padding: 6px 4px 14px; gap: 2px; }
+            .menu-item { padding: 5px 8px; min-width: 50px; }
+            .menu-item i { font-size: 18px; }
+            .menu-item span { font-size: 8px; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .menu-item { padding: 4px 6px; min-width: 45px; }
+            .menu-item i { font-size: 16px; }
+            .menu-item span { font-size: 7px; }
+            .whatsapp-float { width: 45px; height: 45px; bottom: 75px; right: 12px; }
+            .qr-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <div class="logo-container">
+        <div class="logo-icon">BA</div>
+        <div class="logo">
+            <h1>BUSINESS ADS</h1>
+            <p>Niger</p>
+        </div>
+    </div>
+    <div class="user-info" id="userInfoHeader" style="display: none;">
+        <span id="headerUsername"></span>
+        <span class="balance" id="headerBalance">0 FCFA</span>
+        <div class="notification-badge" onclick="showPage('notificationsPage')">
+            <i class="fas fa-bell"></i>
+            <span class="badge-count" id="notificationCount">0</span>
+        </div>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </div>
+</div>
+
+<div class="container">
+    
+    <!-- PAGE CONNEXION -->
+    <div id="authPage" class="page active">
+        <div class="section">
+            <h2 style="text-align: center; margin-bottom: 15px;">Bienvenue</h2>
+            <div id="authError" style="background: rgba(255,71,87,0.2); color: #ff4757; padding: 8px; border-radius: 10px; margin-bottom: 12px; display: none;"></div>
+            <div id="authSuccess" style="background: rgba(0,210,91,0.2); color: #00d25b; padding: 8px; border-radius: 10px; margin-bottom: 12px; display: none;"></div>
+            <div class="auth-tabs" style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div class="auth-tab active" onclick="switchAuthTab('login')" style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#4ecdc4; border-bottom:2px solid #4ecdc4;">Connexion</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')" style="flex:1; text-align:center; padding:10px; cursor:pointer; color:#888;">Inscription</div>
+            </div>
+            <div id="loginForm">
+                <form onsubmit="login(event)">
+                    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required placeholder="votre@email.com"></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPassword" required placeholder="......"></div>
+                    <button type="submit" class="btn-primary">Se connecter</button>
+                </form>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <form onsubmit="register(event)">
+                    <div class="form-group"><label>Nom complet</label><input type="text" id="regFullName" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="regEmail" required></div>
+                    <div class="form-group"><label>WhatsApp</label><input type="tel" id="regWhatsApp" required></div>
+                    <div class="form-group"><label>Pays</label><select id="regCountry" required>
+                        <option value="Niger">Niger</option><option value="Cameroun">Cameroun</option>
+                        <option value="Cote d Ivoire">Cote d Ivoire</option><option value="Senegal">Senegal</option>
+                        <option value="Mali">Mali</option><option value="Burkina Faso">Burkina Faso</option>
+                        <option value="Benin">Benin</option><option value="Togo">Togo</option>
+                    </select></div>
+                    <div class="form-group"><label>Mot de passe</label><input type="password" id="regPassword" required></div>
+                    <div class="form-group"><label>Confirmation</label><input type="password" id="regConfirmPassword" required></div>
+                    <div class="form-group"><label>Code parrain</label><input type="text" id="regSponsorCode" placeholder="Optionnel"></div>
+                    <button type="submit" class="btn-primary">Creer mon compte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE ACCUEIL AVEC GRAPHIQUES -->
+    <div id="homePage" class="page">
+        <div class="balances-grid">
+            <div class="balance-card"><h3>Solde Principal</h3><div class="amount" id="homeBalance">0 FCFA</div><small>Disponible</small></div>
+            <div class="balance-card"><h3>Total Retraits</h3><div class="amount" id="homeTotalWithdrawn">0 FCFA</div><small>Cumule</small></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Filleuls N1</h3><div class="value" id="homeReferrals">0</div></div>
+            <div class="stat-card"><h3>Gains parrainage</h3><div class="value" id="homeReferralEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Gains totaux</h3><div class="value" id="homeTotalEarnings">0 FCFA</div></div>
+            <div class="stat-card"><h3>Points fidelite</h3><div class="value" id="homePoints">0</div></div>
+        </div>
+        
+        <!-- GRAPHIQUE DASHBOARD -->
+        <div class="section">
+            <div class="section-header"><h2>Evolution des gains (30 jours)</h2></div>
+            <canvas id="earningsChart"></canvas>
+        </div>
+        
+        <!-- Programme de fidelite -->
+        <div class="section">
+            <div class="section-header"><h2>Programme de fidelite</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Bronze</h3><div class="value">0-199 pts</div><small>Bonus 0%</small></div>
+                <div class="stat-card"><h3>Argent</h3><div class="value">200-499 pts</div><small>Bonus 5%</small></div>
+                <div class="stat-card"><h3>Or</h3><div class="value">500-999 pts</div><small>Bonus 10%</small></div>
+                <div class="stat-card"><h3>Platine</h3><div class="value">1000+ pts</div><small>Bonus 15%</small></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="loyaltyProgress" style="width:0%"></div></div>
+            <div class="flex-between"><span id="currentPoints">0 points</span><span id="nextLevelInfo"></span></div>
+        </div>
+        
+        <!-- KYC Section -->
+        <div id="kycSection" class="section" style="border: 2px solid #ffc107;">
+            <div class="section-header"><h2>Verification d'identite (KYC)</h2><span id="kycStatusBadge"></span></div>
+            <div id="kycContent"></div>
+        </div>
+        
+        <!-- Actions rapides -->
+        <div class="stats-grid">
+            <button class="btn-primary" onclick="showPage('depositPage')">Deposer</button>
+            <button class="btn-primary" onclick="showPage('withdrawPage')">Retirer</button>
+            <button class="btn-primary" onclick="showPage('transferPage')">Transferer</button>
+            <button class="btn-primary" onclick="showPage('linksPage')">Liens</button>
+        </div>
+        
+        <!-- Code parrainage -->
+        <div class="section">
+            <div class="section-header"><h2>Mon code parrainage</h2><button class="btn-copy" onclick="copyReferralCode()">Copier</button></div>
+            <div style="text-align: center; padding: 8px; background: rgba(78,205,196,0.1); border-radius: 10px;">
+                <span id="referralCodeDisplay" style="font-family: monospace;">---</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE NOTIFICATIONS -->
+    <div id="notificationsPage" class="page">
+        <div class="section-header">
+            <h2>Notifications</h2>
+            <button class="btn-copy" onclick="showPage('homePage')">Retour</button>
+        </div>
+        <div class="section">
+            <div id="notificationsList" class="notifications-list">
+                <div class="empty-state">Aucune notification</div>
+            </div>
+            <button class="btn-secondary" onclick="clearAllNotifications()" style="margin-top: 10px;">Effacer toutes</button>
+        </div>
+    </div>
+    
+    <!-- PAGE CARTE VIRTUELLE -->
+    <div id="cardPage" class="page">
+        <div class="section-header"><h2>Ma Carte Virtuelle</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="virtual-card">
+            <div class="card-chip"><i class="fas fa-microchip"></i><i class="fab fa-cc-visa"></i></div>
+            <div class="card-number" id="cardNumberDisplay">**** **** **** ****</div>
+            <div class="card-details">
+                <div><span>Titulaire</span><span id="cardHolderName">---</span></div>
+                <div><span>Expiration</span><span id="cardExpiry">12/28</span></div>
+                <div><span>CVV</span><span id="cardCVV">***</span></div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-secondary" onclick="copyCardNumber()">Copier N°</button>
+                <button class="btn-secondary" onclick="generateNewCard()">Nouvelle carte</button>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>Solde de la carte</h2></div>
+            <div class="balance-card"><div class="amount" id="cardBalance">0 FCFA</div></div>
+            <button class="btn-primary" onclick="transferToCard()">Transferer vers la carte</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>Mes cartes</h2></div><div id="cardsList"><div class="empty-state">Aucune autre carte</div></div></div>
+    </div>
+    
+    <!-- PAGE COFFRE -->
+    <div id="vaultPage" class="page">
+        <div class="vault-card">
+            <div style="text-align: center;"><i class="fas fa-box" style="font-size: 1.8rem; color:#ffc107"></i><h2>Coffre-fort</h2></div>
+            <div class="vault-amount" id="vaultDetailAmount">0 FCFA</div>
+            <div id="vaultDetailStatus" class="vault-status status-unlocked">Coffre deverrouille</div>
+            <div id="vaultDetailLockInfo" class="date-info" style="display: none;"></div>
+            <div class="vault-buttons">
+                <button class="btn-secondary" onclick="openDepositVault()">Deposer</button>
+                <button class="btn-secondary" onclick="openWithdrawVault()">Retirer</button>
+                <button class="btn-danger" onclick="openLockVault()">Verrouiller</button>
+            </div>
+        </div>
+        <div class="section"><div class="section-header"><h2>Historique</h2></div><div id="vaultHistoryList"><div class="empty-state">Aucune operation</div></div></div>
+    </div>
+    
+    <!-- PAGE DEPOT -->
+    <div id="depositPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>Deposer de l'argent</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+            <div class="balance-card"><h3>Solde actuel</h3><div class="amount" id="depositBalance">0 FCFA</div></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="depositAmount" min="5000" placeholder="Minimum 5 000"></div>
+            <div class="stats-grid">
+                <button class="btn-secondary" onclick="setDepositAmount(5000)">5 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(10000)">10 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(25000)">25 000</button>
+                <button class="btn-secondary" onclick="setDepositAmount(50000)">50 000</button>
+            </div>
+            <button class="btn-primary" onclick="initiateDeposit()">Payer et obtenir mon code</button>
+            <p style="font-size: 0.65rem; text-align: center; margin-top: 12px;">Wave • Orange • Moov • SoleasPay</p>
+        </div>
+    </div>
+    
+    <!-- PAGE RETRAIT -->
+    <div id="withdrawPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>Retirer mes gains</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+            <div class="balance-card"><h3>Solde disponible</h3><div class="amount" id="withdrawBalance">0 FCFA</div></div>
+            <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="withdrawAmount" min="10000" max="500000" oninput="updatePreview()"><small>Min 10 000 | Max 500 000</small></div>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin: 12px 0;">
+                <div class="flex-between"><span>Frais (2%) :</span><span id="previewFees">0 FCFA</span></div>
+                <div class="flex-between"><span>Montant net :</span><span id="previewNet" style="color:#4ecdc4;">0 FCFA</span></div>
+            </div>
+            <div class="form-group"><label>Numero Wave</label><input type="tel" id="withdrawPhone" placeholder="Votre numero Wave"></div>
+            <button class="btn-primary" onclick="confirmWithdraw()">Demander un retrait</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>Historique des retraits</h2></div><div id="withdrawHistoryList"><div class="empty-state">Aucun retrait</div></div></div>
+    </div>
+    
+    <!-- PAGE TRANSFERT -->
+    <div id="transferPage" class="page">
+        <div class="section-header"><h2>Transfert d'argent</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="balance-card"><h3>Mon solde</h3><div class="amount" id="transferBalance">0 FCFA</div></div>
+        <div class="form-group"><label>Email du destinataire</label><input type="email" id="transferEmail" placeholder="exemple@email.com"></div>
+        <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="transferAmount" min="1000" placeholder="Minimum 1 000"></div>
+        <div class="form-group"><label>Message</label><input type="text" id="transferMessage" placeholder="Message..."></div>
+        <button class="btn-primary" onclick="sendTransfer()">Envoyer l'argent</button>
+        <div class="section"><div class="section-header"><h2>Historique des transferts</h2></div><div id="transfersList"><div class="empty-state">Aucun transfert</div></div></div>
+    </div>
+    
+    <!-- PAGE TRANSFERT INTERNATIONAL -->
+    <div id="transfertInternationalPage" class="page">
+        <div class="section-header"><h2>Transfert international</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="balance-card"><h3>Mon solde</h3><div class="amount" id="transferIntBalance">0 FCFA</div></div>
+        <div class="form-group"><label>Pays de destination</label><select id="transferCountry">
+            <option value="France">France</option><option value="USA">USA</option>
+            <option value="Canada">Canada</option><option value="Nigeria">Nigeria</option>
+            <option value="Cote d Ivoire">Cote d Ivoire</option>
+        </select></div>
+        <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="internationalAmount" placeholder="Minimum 20 000 FCFA" oninput="calculateInternationalFees()"></div>
+        <div class="form-group"><label>Numero destinataire</label><input type="tel" id="internationalPhone" placeholder="Numero WhatsApp / Wave"></div>
+        <div id="internationalPreview" style="background:rgba(78,205,196,0.1); border-radius:12px; padding:12px; margin:12px 0;">
+            <div class="flex-between"><span>Frais (5%) :</span><span id="intlFees">0 FCFA</span></div>
+            <div class="flex-between"><span>Montant recu :</span><span id="intlReceived">0 FCFA</span></div>
+        </div>
+        <button class="btn-primary" onclick="sendInternationalTransfer()">Envoyer a l'international</button>
+        <div class="section"><div class="section-header"><h2>Historique</h2></div><div id="internationalHistoryList"><div class="empty-state">Aucun transfert</div></div></div>
+    </div>
+    
+    <!-- PAGE LIENS AFFILIATION -->
+    <div id="linksPage" class="page">
+        <div class="section-header"><h2>Mes liens d'affiliation</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="section">
+            <div class="form-group"><label>Nom du produit</label><input type="text" id="linkProductName" placeholder="Ex: iPhone 14 Pro Max"></div>
+            <div class="form-group"><label>URL de destination</label><input type="url" id="linkDestination" placeholder="https://exemple.com/produit"></div>
+            <div class="form-group"><label>Commission par clic (FCFA)</label><input type="number" id="linkCommission" value="500"></div>
+            <button class="btn-primary" onclick="createAffiliateLink()">Creer mon lien</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>Mes liens crees</h2></div><div id="userLinksList"><div class="empty-state">Aucun lien cree</div></div></div>
+        <div class="section"><div class="section-header"><h2>Statistiques</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total clics</h3><div class="value" id="totalClicks">0</div></div>
+                <div class="stat-card"><h3>Total gains</h3><div class="value" id="totalLinkEarnings">0 FCFA</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE FORMATIONS GRATUITES -->
+    <div id="formationsPage" class="page">
+        <div class="section-header"><h2>Formations gratuites</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="video-grid">
+            <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/Sf9QCHDyNMU" frameborder="0" allowfullscreen></iframe></div><h3>Comment se lancer dans l'Affiliation</h3></div>
+            <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/SeASFfjxXsc" frameborder="0" allowfullscreen></iframe></div><h3>Marketing d'Affiliation - Guide complet</h3></div>
+            <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/tUPa8DoaJUc" frameborder="0" allowfullscreen></iframe></div><h3>FORMATION AFFILIATION - Cours COMPLET</h3></div>
+        </div>
+    </div>
+    
+    <!-- PAGE FORMATIONS PAYANTES (1000 FCFA) -->
+    <div id="trainingPage" class="page">
+        <div class="section-header"><h2>Formations payantes</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="stats-grid">
+            <div class="stat-card" onclick="viewTraining('affiliation')"><h3>Affiliation Masterclass</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+            <div class="stat-card" onclick="viewTraining('marketing')"><h3>Marketing Digital Pro</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+            <div class="stat-card" onclick="viewTraining('entrepreneur')"><h3>Entrepreneuriat</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+            <div class="stat-card" onclick="viewTraining('crypto')"><h3>Crypto & Trading</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+            <div class="stat-card" onclick="viewTraining('socialmedia')"><h3>Reseaux Sociaux</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+            <div class="stat-card" onclick="viewTraining('ecommerce')"><h3>E-commerce Pro</h3><div class="value">1 000 FCFA</div><small>Certificat</small></div>
+        </div>
+        <div class="section" id="trainingDetails" style="display: none;">
+            <div id="trainingContent"></div>
+            <button class="btn-primary" onclick="buyTraining()" id="buyTrainingBtn">Acheter (1 000 FCFA)</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>Mes certificats</h2></div><div id="myCertificatesList"><div class="empty-state">Aucun certificat</div></div></div>
+    </div>
+    
+    <!-- PAGE CLASSEMENT -->
+    <div id="rankingPage" class="page">
+        <div class="section-header"><h2>Classement panafricain</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Votre rang</h3><div class="value" id="userRank">-</div></div>
+            <div class="stat-card"><h3>Total pays</h3><div class="value" id="totalCountries">0</div></div>
+            <div class="stat-card"><h3>Total Afrique</h3><div class="value" id="totalAfricaUsers">0</div></div>
+        </div>
+        <div class="section"><h3>Top 10 Afrique</h3><div id="africaRankingList"></div></div>
+    </div>
+    
+    <!-- PAGE DEFIS -->
+    <div id="defisPage" class="page">
+        <div class="section-header"><h2>Defi du mois</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="section">
+            <div class="balance-card"><h3>DEFI JUIN 2026</h3><div class="amount">Objectif 20 filleuls</div></div>
+            <div class="progress-bar"><div class="progress-fill" id="defiProgress" style="width:0%"></div></div>
+            <div class="flex-between"><span>Progression : <span id="defiCurrent">0</span>/20</span><span id="defiPercent">0%</span></div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>1er prix</h3><div class="value">50 000 FCFA</div></div>
+                <div class="stat-card"><h3>2e prix</h3><div class="value">25 000 FCFA</div></div>
+                <div class="stat-card"><h3>3e prix</h3><div class="value">10 000 FCFA</div></div>
+            </div>
+            <button class="btn-primary" onclick="joinDefi()">Participer</button>
+        </div>
+        <div class="section"><div class="section-header"><h2>Classement du defi</h2></div><div id="defiRankingList"><div class="empty-state">Aucun participant</div></div></div>
+    </div>
+    
+    <!-- PAGE HISTORIQUE -->
+    <div id="historyPage" class="page">
+        <div class="section"><div class="section-header"><h2>Historique des transactions</h2><button class="btn-copy" onclick="exportToCSV()">Exporter CSV</button></div><div id="historyList"><div class="empty-state">Aucune transaction</div></div></div>
+    </div>
+    
+    <!-- PAGE PARRAINAGES -->
+    <div id="referralsPage" class="page">
+        <div class="section"><div class="section-header"><h2>Liste de parrainages</h2><button class="btn-copy" onclick="showPage('settingsPage')">Retour</button></div><div id="referralsList"><div class="empty-state">Aucun parrainage</div></div></div>
+    </div>
+    
+    <!-- PAGE QR CODES -->
+    <div id="qrCodePage" class="page">
+        <div class="section-header"><h2>Paiement par QR code</h2><button class="btn-copy" onclick="showPage('settingsPage')">Retour</button></div>
+        <div class="qr-grid">
+            <div class="qr-card"><div id="qrWave"></div><h4>Wave Money</h4></div>
+            <div class="qr-card"><div id="qrOrange"></div><h4>Orange Money</h4></div>
+            <div class="qr-card"><div id="qrMoov"></div><h4>Moov Flooz</h4></div>
+            <div class="qr-card"><div id="qrSoleasPay"></div><h4>SoleasPay</h4></div>
+        </div>
+        <p style="text-align: center; margin-top: 12px; font-size: 0.65rem;">Scannez le QR code pour payer</p>
+    </div>
+    
+    <!-- PAGE RECRUTEMENT -->
+    <div id="recruitmentPage" class="page">
+        <div class="section-header"><h2>Rejoindre l'equipe</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="section">
+            <div class="form-group"><label>Nom complet</label><input type="text" id="recruitName"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="recruitEmail"></div>
+            <div class="form-group"><label>WhatsApp</label><input type="tel" id="recruitPhone"></div>
+            <div class="form-group"><label>Ville</label><input type="text" id="recruitCity"></div>
+            <div class="form-group"><label>Poste</label><select id="recruitPosition"><option>Ambassadeur</option><option>Promoteur</option><option>Vendeur</option></select></div>
+            <div class="form-group"><label>Motivation</label><textarea id="recruitMessage" rows="3"></textarea></div>
+            <button class="btn-primary" onclick="submitApplication()">Postuler</button>
+        </div>
+    </div>
+    
+    <!-- PAGE ASSISTANT IA -->
+    <div id="aiAssistantPage" class="page">
+        <div class="section-header"><h2>Assistant IA</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="section">
+            <div class="form-group"><label>Votre question</label><textarea id="aiQuestion" rows="3" placeholder="Posez n'importe quelle question..."></textarea></div>
+            <button class="btn-primary" onclick="askAI()">Poser la question</button>
+        </div>
+        <div class="section" id="aiResponseSection" style="display: none;">
+            <div class="section-header"><h2>Reponse</h2><button class="btn-copy" onclick="copyAIResponse()">Copier</button></div>
+            <div id="aiResponse"></div>
+        </div>
+        <div class="section">
+            <div class="history-item" onclick="askQuickQuestion('Comment gagner de l argent ?')"><span>Comment gagner de l argent ?</span><i class="fas fa-chevron-right"></i></div>
+            <div class="history-item" onclick="askQuickQuestion('Comment faire un retrait ?')"><span>Comment faire un retrait ?</span><i class="fas fa-chevron-right"></i></div>
+            <div class="history-item" onclick="askQuickQuestion('C est quoi le KYC ?')"><span>C est quoi le KYC ?</span><i class="fas fa-chevron-right"></i></div>
+            <div class="history-item" onclick="askQuickQuestion('Comment contacter l admin ?')"><span>Comment contacter l admin ?</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+    
+    <!-- PAGE ADMIN -->
+    <div id="adminPage" class="page">
+        <div class="section-header"><h2>Panel Administrateur</h2><button class="btn-copy" onclick="showPage('homePage')">Retour</button></div>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Utilisateurs</h3><div class="value" id="totalUsers">0</div></div>
+            <div class="stat-card"><h3>KYC valides</h3><div class="value" id="kycApprovedCount">0</div></div>
+            <div class="stat-card"><h3>En attente</h3><div class="value" id="kycPendingCount">0</div></div>
+        </div>
+        <div class="section"><div class="section-header"><h2>Tous les utilisateurs</h2><button class="btn-copy" onclick="refreshUsersList()">Actualiser</button></div><div id="allUsersList"><div class="empty-state">Chargement...</div></div></div>
+        <div class="section"><div class="section-header"><h2>Demandes KYC</h2></div><div id="kycRequestsList"><div class="empty-state">Aucune demande</div></div></div>
+        <div class="section"><div class="section-header"><h2>Candidatures</h2><span class="badge-pending" id="pendingAppsCount">0</span></div><div id="applicationsList"><div class="empty-state">Aucune candidature</div></div></div>
+        <div class="section"><div class="section-header"><h2>Creer un compte</h2></div>
+            <div class="form-group"><label>Nom</label><input type="text" id="adminCreateName"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="adminCreateEmail"></div>
+            <div class="form-group"><label>WhatsApp</label><input type="tel" id="adminCreateWhatsApp"></div>
+            <button class="btn-primary" onclick="adminCreateUser()">Creer</button>
+            <div id="adminCreateResult"></div>
+        </div>
+    </div>
+    
+    <!-- PAGE COMPTE -->
+    <div id="accountPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>Gestion du compte</h2><button class="btn-copy" onclick="showPage('settingsPage')">Retour</button></div>
+            <div class="setting-item" onclick="showProfile()"><span><i class="fas fa-user"></i> Mon profil</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showSecurity()"><span><i class="fas fa-lock"></i> Securite</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showConnectedDevices()"><span><i class="fas fa-laptop"></i> Appareils connectes</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="section"><div class="section-header"><h2>Notre adresse</h2></div>
+            <div style="padding: 10px; background: rgba(78,205,196,0.1); border-radius: 10px;">
+                <p>BUSINESS ADS NIGER - Niamey, Niger</p>
+                <p>+227 87 37 97 15</p>
+                <p>businessads.niger@gmail.com</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE REGLAGES -->
+    <div id="settingsPage" class="page">
+        <div class="section">
+            <div class="section-header"><h2>Reglages</h2></div>
+            <div class="setting-item" onclick="showPage('accountPage')"><span><i class="fas fa-user-circle"></i> Gerer le compte</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showDataDefinitions()"><span><i class="fas fa-database"></i> Definitions</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('formationsPage')"><span><i class="fas fa-graduation-cap"></i> Formations gratuites</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('trainingPage')"><span><i class="fas fa-certificate"></i> Formations payantes</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showAboutCompany()"><span><i class="fas fa-info-circle"></i> A propos</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showTermsAndConditions()"><span><i class="fas fa-file-alt"></i> Conditions</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showReferralsList()"><span><i class="fas fa-users"></i> Parrainages</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('qrCodePage')"><span><i class="fas fa-qrcode"></i> QR codes</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('recruitmentPage')"><span><i class="fas fa-briefcase"></i> Recrutement</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('aiAssistantPage')"><span><i class="fas fa-robot"></i> Assistant IA</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('adminPage')"><span><i class="fas fa-shield-alt"></i> Panel Admin</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('rankingPage')"><span><i class="fas fa-trophy"></i> Classement</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="showPage('defisPage')"><span><i class="fas fa-calendar-check"></i> Defis</span><i class="fas fa-chevron-right"></i></div>
+            <div class="setting-item" onclick="logout()"><span><i class="fas fa-sign-out-alt"></i> Deconnexion</span><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+</div>
+
+<!-- MENU BOTTOM -->
+<div class="bottom-menu">
+    <div class="menu-item" onclick="showPage('homePage')" id="menuHome"><i class="fas fa-home"></i><span>Accueil</span></div>
+    <div class="menu-item" onclick="showPage('cardPage')" id="menuCard"><i class="fas fa-credit-card"></i><span>Carte</span></div>
+    <div class="menu-item" onclick="showPage('vaultPage')" id="menuVault"><i class="fas fa-box"></i><span>Coffre</span></div>
+    <div class="menu-item" onclick="showPage('depositPage')" id="menuDeposit"><i class="fas fa-download"></i><span>Depot</span></div>
+    <div class="menu-item" onclick="showPage('withdrawPage')" id="menuWithdraw"><i class="fas fa-upload"></i><span>Retrait</span></div>
+    <div class="menu-item" onclick="showPage('transferPage')" id="menuTransfer"><i class="fas fa-exchange-alt"></i><span>Transfert</span></div>
+    <div class="menu-item" onclick="showPage('transfertInternationalPage')" id="menuTransfertInt"><i class="fas fa-globe"></i><span>Monde</span></div>
+    <div class="menu-item" onclick="showPage('linksPage')" id="menuLinks"><i class="fas fa-link"></i><span>Liens</span></div>
+    <div class="menu-item" onclick="showPage('formationsPage')" id="menuFormations"><i class="fas fa-graduation-cap"></i><span>Formations</span></div>
+    <div class="menu-item" onclick="showPage('trainingPage')" id="menuTraining"><i class="fas fa-certificate"></i><span>Certificats</span></div>
+    <div class="menu-item" onclick="showPage('rankingPage')" id="menuRanking"><i class="fas fa-trophy"></i><span>Classement</span></div>
+    <div class="menu-item" onclick="showPage('defisPage')" id="menuDefis"><i class="fas fa-calendar-check"></i><span>Defis</span></div>
+    <div class="menu-item" onclick="showPage('historyPage')" id="menuHistory"><i class="fas fa-clock"></i><span>Historique</span></div>
+    <div class="menu-item" onclick="showPage('aiAssistantPage')" id="menuAi"><i class="fas fa-robot"></i><span>IA</span></div>
+    <div class="menu-item" onclick="showPage('adminPage')" id="menuAdmin"><i class="fas fa-shield-alt"></i><span>Admin</span></div>
+    <div class="menu-item" onclick="showPage('settingsPage')" id="menuSettings"><i class="fas fa-cog"></i><span>Reglage</span></div>
+</div>
+
+<div class="whatsapp-float" onclick="window.open('https://wa.me/22787379715', '_blank')"><i class="fab fa-whatsapp"></i></div>
+
+<script>
+    // ==================== EMAILJS INIT ====================
+    emailjs.init("fJYrP_URhN4FYluMW");
+    const EMAILJS_SERVICE_ID = "service_r9ab03o";
+    const ADMIN_EMAIL = "kaledtchindo7@gmail.com";
+    
+    // ==================== BASE DE DONNEES ====================
+    let DB = { users: [], withdrawals: [], vaults: [], vaultHistory: [], cards: [], links: [], transfers: [], kycRequests: [], applications: [], notifications: [], internationalTransfers: [], defiParticipants: [], certificates: [] };
+    let currentUser = null;
+    let earningsChart = null;
+    
+    const ADMIN_WHATSAPP = "22787379715";
+    const FEE_PERCENT = 0.02;
+    const SPONSOR_BONUS_N1 = 500;
+    const SPONSOR_BONUS_N2 = 200;
+    const SPONSOR_BONUS_N3 = 100;
+    const SPONSOR_BONUS_N4 = 50;
+    const SPONSOR_BONUS_N5 = 25;
+    
+    function loadData() {
+        DB.users = JSON.parse(localStorage.getItem('ba_users')) || [];
+        DB.withdrawals = JSON.parse(localStorage.getItem('ba_withdrawals')) || [];
+        DB.vaults = JSON.parse(localStorage.getItem('ba_vaults')) || [];
+        DB.vaultHistory = JSON.parse(localStorage.getItem('ba_vault_history')) || [];
+        DB.cards = JSON.parse(localStorage.getItem('ba_cards')) || [];
+        DB.links = JSON.parse(localStorage.getItem('ba_links')) || [];
+        DB.transfers = JSON.parse(localStorage.getItem('ba_transfers')) || [];
+        DB.kycRequests = JSON.parse(localStorage.getItem('ba_kyc_requests')) || [];
+        DB.applications = JSON.parse(localStorage.getItem('ba_applications')) || [];
+        DB.notifications = JSON.parse(localStorage.getItem('ba_notifications')) || [];
+        DB.internationalTransfers = JSON.parse(localStorage.getItem('international_transfers')) || [];
+        DB.defiParticipants = JSON.parse(localStorage.getItem('defi_participants')) || [];
+        DB.certificates = JSON.parse(localStorage.getItem('ba_certificates')) || [];
+        
+        if (!DB.users.some(u => u.email === 'admin@ads.com')) {
+            DB.users.push({ id: 'admin_1', username: 'Admin', email: 'admin@ads.com', password: 'admin123', whatsappNumber: '87379715', country: 'Niger', balance: 1000000, referralCode: 'REF-ADMIN', isAdmin: true, createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0, kycStatus: 'approved', points: 0, level: 0 });
+            saveData();
+        }
+        DB.users.forEach(u => { if (u.kycStatus === undefined) u.kycStatus = 'pending'; if (u.country === undefined) u.country = 'Niger'; if (u.points === undefined) u.points = 0; });
+        saveData();
+    }
+    
+    function saveData() {
+        localStorage.setItem('ba_users', JSON.stringify(DB.users));
+        localStorage.setItem('ba_withdrawals', JSON.stringify(DB.withdrawals));
+        localStorage.setItem('ba_vaults', JSON.stringify(DB.vaults));
+        localStorage.setItem('ba_vault_history', JSON.stringify(DB.vaultHistory));
+        localStorage.setItem('ba_cards', JSON.stringify(DB.cards));
+        localStorage.setItem('ba_links', JSON.stringify(DB.links));
+        localStorage.setItem('ba_transfers', JSON.stringify(DB.transfers));
+        localStorage.setItem('ba_kyc_requests', JSON.stringify(DB.kycRequests));
+        localStorage.setItem('ba_applications', JSON.stringify(DB.applications));
+        localStorage.setItem('ba_notifications', JSON.stringify(DB.notifications));
+        localStorage.setItem('international_transfers', JSON.stringify(DB.internationalTransfers));
+        localStorage.setItem('defi_participants', JSON.stringify(DB.defiParticipants));
+        localStorage.setItem('ba_certificates', JSON.stringify(DB.certificates));
+    }
+    
+    loadData();
+    
+    // ==================== NOTIFICATIONS ====================
+    function addNotification(title, message, type) {
+        const notif = { id: Date.now(), userId: currentUser.id, title: title, message: message, type: type, read: false, date: new Date().toISOString() };
+        DB.notifications.push(notif);
+        saveData();
+        updateNotificationBadge();
+        showToast(message, type);
+    }
+    
+    function updateNotificationBadge() {
+        const unread = DB.notifications.filter(n => n.userId === currentUser?.id && !n.read).length;
+        const badge = document.getElementById('notificationCount');
+        if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'flex' : 'none'; }
+    }
+    
+    function loadNotifications() {
+        const userNotifs = DB.notifications.filter(n => n.userId === currentUser.id).sort((a,b) => new Date(b.date) - new Date(a.date));
+        const container = document.getElementById('notificationsList');
+        if (userNotifs.length === 0) { container.innerHTML = '<div class="empty-state">Aucune notification</div>'; return; }
+        container.innerHTML = userNotifs.map(n => `<div class="notification-item" style="background: ${!n.read ? 'rgba(78,205,196,0.1)' : 'transparent'}; border-radius: 10px; margin-bottom: 8px; padding: 10px;" onclick="markNotificationRead(${n.id})"><div><strong>${n.title}</strong><p style="font-size: 0.8rem; margin-top: 4px;">${n.message}</p><small>${formatDate(n.date)}</small></div>${!n.read ? '<span class="badge-success">Nouveau</span>' : ''}</div>`).join('');
+    }
+    
+    function markNotificationRead(id) {
+        const notif = DB.notifications.find(n => n.id === id);
+        if (notif) { notif.read = true; saveData(); loadNotifications(); updateNotificationBadge(); }
+    }
+    
+    function clearAllNotifications() {
+        DB.notifications = DB.notifications.filter(n => n.userId !== currentUser.id);
+        saveData(); loadNotifications(); updateNotificationBadge();
+        showToast("Notifications effacees", 'success');
+    }
+    
+    // ==================== QR CODES ====================
+    function generateQRCodes() {
+        setTimeout(() => {
+            if(document.getElementById('qrWave')) new QRCode(document.getElementById('qrWave'), { text: 'https://wa.me/22787379715', width: 80, height: 80 });
+            if(document.getElementById('qrOrange')) new QRCode(document.getElementById('qrOrange'), { text: 'https://wa.me/22787379715', width: 80, height: 80 });
+            if(document.getElementById('qrMoov')) new QRCode(document.getElementById('qrMoov'), { text: 'https://wa.me/22787379715', width: 80, height: 80 });
+            if(document.getElementById('qrSoleasPay')) new QRCode(document.getElementById('qrSoleasPay'), { text: 'https://soleaspay.com/qr/pay/sb.html?l=ZnI=&a=MA==&d=QWZmaWxpYXRpb24g&m=dA==&c=WEFG&k=dW5UUVhrS1pfZ3BKOEZDcF9GMlhfNzRSX2dkNXV1ZHhPcjhybGVxYVRBUS1BUA==&s=QlVTSU5FU1MgQURTIA==&q=V0hCOUFQNkZJNQ==', width: 80, height: 80 });
+        }, 100);
+    }
+    
+    // ==================== AFFICHAGE ====================
+    function formatFCFA(amount) { return (amount || 0).toLocaleString() + ' FCFA'; }
+    function formatDate(iso) { let d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); }
+    
+    function showToast(msg, type) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function switchAuthTab(tab) {
+        if(tab === 'login') { document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; }
+        else { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; }
+    }
+    
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        const menuMap = { 
+            'homePage':'menuHome', 'cardPage':'menuCard', 'vaultPage':'menuVault', 
+            'depositPage':'menuDeposit', 'withdrawPage':'menuWithdraw', 'transferPage':'menuTransfer',
+            'transfertInternationalPage':'menuTransfertInt', 'linksPage':'menuLinks', 'formationsPage':'menuFormations',
+            'trainingPage':'menuTraining', 'rankingPage':'menuRanking', 'defisPage':'menuDefis',
+            'historyPage':'menuHistory', 'aiAssistantPage':'menuAi', 'adminPage':'menuAdmin', 'settingsPage':'menuSettings'
+        };
+        if(menuMap[pageId]) document.getElementById(menuMap[pageId]).classList.add('active');
+        if(pageId === 'homePage') updateHomePage();
+        if(pageId === 'cardPage') updateCardUI();
+        if(pageId === 'vaultPage') updateVaultUI();
+        if(pageId === 'withdrawPage') updateWithdrawPage();
+        if(pageId === 'transferPage') { document.getElementById('transferBalance').textContent = formatFCFA(currentUser.balance); loadTransfers(); }
+        if(pageId === 'transfertInternationalPage') { document.getElementById('transferIntBalance').textContent = formatFCFA(currentUser.balance); loadInternationalHistory(); }
+        if(pageId === 'linksPage') loadUserLinks();
+        if(pageId === 'adminPage') loadAdminData();
+        if(pageId === 'referralsPage') loadReferralsList();
+        if(pageId === 'rankingPage') updatePanAfricanRanking();
+        if(pageId === 'defisPage') updateDefiProgress();
+        if(pageId === 'notificationsPage') loadNotifications();
+        if(pageId === 'trainingPage') loadCertificates();
+        if(pageId === 'historyPage') loadHistory();
+    }
+    
+    // ==================== GRAPHIQUE ====================
+    function updateEarningsChart() {
+        const ctx = document.getElementById('earningsChart')?.getContext('2d');
+        if(!ctx) return;
+        const labels = []; const data = [];
+        for(let i=29; i>=0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'}));
+            data.push(Math.floor(Math.random() * 8000) + 1000);
+        }
+        if(earningsChart) earningsChart.destroy();
+        earningsChart = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Gains (FCFA)', data: data, borderColor: '#4ecdc4', backgroundColor: 'rgba(78,205,196,0.1)', fill: true, tension: 0.3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } } });
+    }
+    
+    // ==================== AUTH ====================
+    function login(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPassword').value;
+        const user = DB.users.find(u => u.email === email && u.password === pwd);
+        if (!user) { showToast("Identifiants incorrects", 'error'); return; }
+        currentUser = user;
+        localStorage.setItem('currentUserId', user.id);
+        document.body.classList.add('logged-in');
+        document.getElementById('authPage').classList.remove('active');
+        document.getElementById('userInfoHeader').style.display = 'flex';
+        showPage('homePage');
+        updateHomePage();
+        generateQRCodes();
+        updateNotificationBadge();
+        showToast(`Bienvenue ${user.username}`, 'success');
+    }
+    
+    function register(e) {
+        e.preventDefault();
+        const fullName = document.getElementById('regFullName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const whatsapp = document.getElementById('regWhatsApp').value.trim();
+        const country = document.getElementById('regCountry').value;
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        const sponsorCode = document.getElementById('regSponsorCode').value.trim().toUpperCase();
+        
+        if (!fullName || !email || !whatsapp || !country || !password) { showToast("Remplissez tous les champs", 'error'); return; }
+        if (password !== confirm) { showToast("Les mots de passe ne correspondent pas", 'error'); return; }
+        if (DB.users.some(u => u.email === email)) { showToast("Email deja utilise", 'error'); return; }
+        
+        let sponsorId = null, sponsorLevel2Id = null, sponsorLevel3Id = null, sponsorLevel4Id = null, sponsorLevel5Id = null;
+        if (sponsorCode) {
+            const sponsor = DB.users.find(u => u.referralCode === sponsorCode);
+            if (sponsor) { sponsorId = sponsor.id; if (sponsor.sponsorId) sponsorLevel2Id = sponsor.sponsorId; if (sponsor.sponsorLevel2Id) sponsorLevel3Id = sponsor.sponsorLevel2Id; if (sponsor.sponsorLevel3Id) sponsorLevel4Id = sponsor.sponsorLevel3Id; if (sponsor.sponsorLevel4Id) sponsorLevel5Id = sponsor.sponsorLevel4Id; }
+        }
+        
+        const newUser = { id: 'user_' + Date.now(), username: fullName, email: email, password: password, whatsappNumber: whatsapp, country: country, balance: 0, referralCode: 'REF-' + Math.random().toString(36).substring(2,8).toUpperCase(), sponsorId: sponsorId, sponsorLevel2Id: sponsorLevel2Id, sponsorLevel3Id: sponsorLevel3Id, sponsorLevel4Id: sponsorLevel4Id, sponsorLevel5Id: sponsorLevel5Id, createdAt: new Date().toISOString(), totalEarned: 0, totalWithdrawn: 0, isAdmin: false, kycStatus: 'pending', points: 0, level: 0 };
+        DB.users.push(newUser);
+        
+        if (sponsorId) { const s = DB.users.find(u => u.id === sponsorId); if(s) { s.balance += SPONSOR_BONUS_N1; s.totalEarned += SPONSOR_BONUS_N1; s.points += 10; updateUserLevel(s); showToast(`+${SPONSOR_BONUS_N1} FCFA pour ${s.username} (N1)`, 'success'); addNotificationToUser(sponsorId, 'Nouveau filleul', `${fullName} s'est inscrit avec votre code ! +500 FCFA`); } }
+        if (sponsorLevel2Id) { const s2 = DB.users.find(u => u.id === sponsorLevel2Id); if(s2) { s2.balance += SPONSOR_BONUS_N2; s2.totalEarned += SPONSOR_BONUS_N2; s2.points += 5; updateUserLevel(s2); showToast(`+${SPONSOR_BONUS_N2} FCFA pour ${s2.username} (N2)`, 'success'); } }
+        if (sponsorLevel3Id) { const s3 = DB.users.find(u => u.id === sponsorLevel3Id); if(s3) { s3.balance += SPONSOR_BONUS_N3; s3.totalEarned += SPONSOR_BONUS_N3; s3.points += 3; updateUserLevel(s3); showToast(`+${SPONSOR_BONUS_N3} FCFA pour ${s3.username} (N3)`, 'success'); } }
+        if (sponsorLevel4Id) { const s4 = DB.users.find(u => u.id === sponsorLevel4Id); if(s4) { s4.balance += SPONSOR_BONUS_N4; s4.totalEarned += SPONSOR_BONUS_N4; s4.points += 2; updateUserLevel(s4); showToast(`+${SPONSOR_BONUS_N4} FCFA pour ${s4.username} (N4)`, 'success'); } }
+        if (sponsorLevel5Id) { const s5 = DB.users.find(u => u.id === sponsorLevel5Id); if(s5) { s5.balance += SPONSOR_BONUS_N5; s5.totalEarned += SPONSOR_BONUS_N5; s5.points += 1; updateUserLevel(s5); showToast(`+${SPONSOR_BONUS_N5} FCFA pour ${s5.username} (N5)`, 'success'); } }
+        
+        saveData();
+        showToast("Compte cree ! Connectez-vous.", 'success');
+        switchAuthTab('login');
+    }
+    
+    function addNotificationToUser(userId, title, message) {
+        const notif = { id: Date.now(), userId: userId, title: title, message: message, type: 'info', read: false, date: new Date().toISOString() };
+        DB.notifications.push(notif);
+        saveData();
+        if (currentUser && currentUser.id === userId) updateNotificationBadge();
+    }
+    
+    function logout() { currentUser = null; localStorage.removeItem('currentUserId'); document.body.classList.remove('logged-in'); location.reload(); }
+    
+    function updateUserLevel(user) {
+        if (user.points >= 1000) user.level = 4;
+        else if (user.points >= 500) user.level = 3;
+        else if (user.points >= 200) user.level = 2;
+        else user.level = 1;
+        saveData();
+    }
+    
+    // ==================== PAGE ACCUEIL ====================
+    function updateHomePage() {
+        if(!currentUser) return;
+        document.getElementById('homeBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('homeTotalWithdrawn').textContent = formatFCFA(currentUser.totalWithdrawn || 0);
+        const referrals = DB.users.filter(u => u.sponsorId === currentUser.id);
+        document.getElementById('homeReferrals').textContent = referrals.length;
+        document.getElementById('homeReferralEarnings').textContent = formatFCFA(referrals.length * SPONSOR_BONUS_N1);
+        document.getElementById('homeTotalEarnings').textContent = formatFCFA(currentUser.totalEarned || 0);
+        document.getElementById('homePoints').textContent = currentUser.points || 0;
+        document.getElementById('referralCodeDisplay').textContent = currentUser.referralCode || '---';
+        document.getElementById('headerUsername').textContent = currentUser.username;
+        document.getElementById('headerBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('depositBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('transferBalance').textContent = formatFCFA(currentUser.balance);
+        document.getElementById('transferIntBalance').textContent = formatFCFA(currentUser.balance);
+        updateKYCStatus();
+        updateLoyaltyDisplay();
+        updateEarningsChart();
+    }
+    
+    function updateLoyaltyDisplay() {
+        const levelNames = ['', 'Bronze', 'Argent', 'Or', 'Platine'];
+        document.getElementById('currentPoints').textContent = `${currentUser.points || 0} points`;
+        let nextLevel = 0;
+        if (currentUser.points < 200) nextLevel = 200;
+        else if (currentUser.points < 500) nextLevel = 500;
+        else if (currentUser.points < 1000) nextLevel = 1000;
+        if (nextLevel > 0) {
+            document.getElementById('nextLevelInfo').textContent = `${nextLevel - (currentUser.points || 0)} points avant ${levelNames[nextLevel >= 500 ? 3 : (nextLevel >= 200 ? 2 : 1)]}`;
+            document.getElementById('loyaltyProgress').style.width = `${((currentUser.points || 0) / nextLevel) * 100}%`;
+        } else { document.getElementById('nextLevelInfo').textContent = 'Niveau maximum atteint'; document.getElementById('loyaltyProgress').style.width = '100%'; }
+    }
+    
+    function updateWithdrawPage() {
+        if(!currentUser) return;
+        document.getElementById('withdrawBalance').textContent = formatFCFA(currentUser.balance);
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id).reverse();
+        const container = document.getElementById('withdrawHistoryList');
+        if(withdrawals.length === 0) { container.innerHTML = '<div class="empty-state">Aucun retrait</div>'; return; }
+        container.innerHTML = withdrawals.map(w => `<div class="history-item"><div><small>${formatDate(w.date)}</small><br><strong>${formatFCFA(w.net)}</strong></div><div><span class="badge-success">Valide</span></div></div>`).join('');
+    }
+    
+    function loadHistory() {
+        if(!currentUser) return;
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id);
+        const container = document.getElementById('historyList');
+        if(withdrawals.length === 0) { container.innerHTML = '<div class="empty-state">Aucune transaction</div>'; return; }
+        container.innerHTML = withdrawals.map(t => `<div class="history-item" onclick="showReceipt('${t.id}')"><div><small>${formatDate(t.date)}</small><br><strong>Retrait</strong></div><div>${formatFCFA(t.net)}</div></div>`).join('');
+    }
+    
+    function showReceipt(transactionId) {
+        const transaction = DB.withdrawals.find(w => w.id === transactionId);
+        if(!transaction) return;
+        const receiptHTML = `<div class="receipt-card"><div class="receipt-header"><h3>BUSINESS ADS</h3><p>Reçu de transaction</p></div><div class="receipt-row"><span>ID</span><span>${transaction.id}</span></div><div class="receipt-row"><span>Date</span><span>${formatDate(transaction.date)}</span></div><div class="receipt-row"><span>Montant</span><span>${formatFCFA(transaction.amount)}</span></div><div class="receipt-row"><span>Frais</span><span>${formatFCFA(transaction.fees)}</span></div><div class="receipt-row"><span>Net</span><span>${formatFCFA(transaction.net)}</span></div><div class="receipt-row"><span>Statut</span><span class="receipt-status">Valide</span></div></div>`;
+        document.getElementById('receiptContent').innerHTML = receiptHTML;
+        document.getElementById('receiptModal').style.display = 'flex';
+        showPage('receiptPage');
+    }
+    
+    function updatePreview() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+        let fees = Math.round(a * FEE_PERCENT);
+        document.getElementById('previewFees').textContent = formatFCFA(fees);
+        document.getElementById('previewNet').textContent = formatFCFA(a - fees);
+    }
+    
+    function confirmWithdraw() {
+        let a = parseFloat(document.getElementById('withdrawAmount').value);
+        let phone = document.getElementById('withdrawPhone').value.trim();
+        if(a < 10000 || a > 500000 || !phone) { showToast("Montant invalide", 'error'); return; }
+        if(a > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        if(currentUser.kycStatus !== 'approved') { showToast("Verifiez d'abord votre identite (KYC)", 'error'); return; }
+        let fees = Math.round(a * FEE_PERCENT);
+        let net = a - fees;
+        currentUser.balance -= a;
+        currentUser.totalWithdrawn = (currentUser.totalWithdrawn || 0) + net;
+        const txId = 'WDR-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
+        DB.withdrawals.push({ id: txId, userId: currentUser.id, username: currentUser.username, email: currentUser.email, phone: phone, amount: a, fees: fees, net: net, status: 'completed', date: new Date().toISOString() });
+        const admin = DB.users.find(u => u.isAdmin);
+        if(admin && currentUser.id !== admin.id) { admin.balance += fees; admin.totalEarned += fees; admin.points += 5; updateUserLevel(admin); }
+        saveData();
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawPhone').value = '';
+        updatePreview();
+        updateHomePage();
+        updateWithdrawPage();
+        addNotification('Retrait effectue', `Vous avez retire ${formatFCFA(net)} avec succes`, 'success');
+        showToast(`Retrait de ${formatFCFA(net)} valide`, 'success');
+        
+        emailjs.send(EMAILJS_SERVICE_ID, 'template_withdraw', { to_email: ADMIN_EMAIL, user_name: currentUser.username, user_email: currentUser.email, amount: a, fees: fees, net: net, withdraw_phone: phone, transaction_id: txId, date: new Date().toLocaleString('fr-FR') }).catch(()=>{});
+    }
+    
+    // ==================== CARTE VIRTUELLE ====================
+    function getUserCard() {
+        let card = DB.cards.find(c => c.userId === currentUser.id && c.isPrimary);
+        if (!card) { card = { userId: currentUser.id, cardNumber: generateCardNumber(), cardHolder: currentUser.username.toUpperCase(), expiry: "12/28", cvv: Math.floor(Math.random()*900+100), balance: 0, transactions: 0, spending: 0, isPrimary: true }; DB.cards.push(card); saveData(); }
+        return card;
+    }
+    function generateCardNumber() { let n=''; for(let i=0;i<4;i++) n+=Math.floor(Math.random()*9000+1000)+(i<3?' ':''); return n; }
+    function updateCardUI() {
+        const card = getUserCard();
+        document.getElementById('cardNumberDisplay').textContent = card.cardNumber;
+        document.getElementById('cardHolderName').textContent = card.cardHolder;
+        document.getElementById('cardExpiry').textContent = card.expiry;
+        document.getElementById('cardCVV').textContent = card.cvv;
+        document.getElementById('cardBalance').textContent = formatFCFA(card.balance);
+        const otherCards = DB.cards.filter(c => c.userId === currentUser.id && !c.isPrimary);
+        document.getElementById('cardsList').innerHTML = otherCards.length === 0 ? '<div class="empty-state">Aucune autre carte</div>' : otherCards.map(c => `<div class="card-item"><div>.... ${c.cardNumber.slice(-4)}</div><button class="btn-copy" onclick="deleteCard('${c.id}')">Supprimer</button></div>`).join('');
+    }
+    function copyCardNumber() { const card=getUserCard(); navigator.clipboard.writeText(card.cardNumber.replace(/ /g,'')); showToast("Numero copie",'success'); }
+    function generateNewCard() { DB.cards.push({ id:'card_'+Date.now(), userId:currentUser.id, cardNumber:generateCardNumber(), cardHolder:currentUser.username.toUpperCase(), expiry:"12/28", cvv:Math.floor(Math.random()*900+100), balance:0, transactions:0, spending:0, isPrimary:false }); saveData(); updateCardUI(); showToast("Nouvelle carte ajoutee",'success'); }
+    function deleteCard(id) { DB.cards=DB.cards.filter(c=>c.id!==id); saveData(); updateCardUI(); showToast("Carte supprimee",'success'); }
+    function transferToCard() { let amount=parseInt(prompt("Montant a transferer :")); if(isNaN(amount)||amount<=0) return; if(amount>currentUser.balance){ showToast("Solde insuffisant",'error'); return; } currentUser.balance-=amount; const card=getUserCard(); card.balance+=amount; card.transactions++; saveData(); updateHomePage(); updateCardUI(); addNotification('Transfert carte', `${formatFCFA(amount)} transferes vers votre carte`, 'success'); showToast(`${formatFCFA(amount)} transfere`,'success'); }
+    
+    // ==================== LIENS AFFILIATION ====================
+    function createAffiliateLink() {
+        const name = document.getElementById('linkProductName').value.trim();
+        const url = document.getElementById('linkDestination').value.trim();
+        const commission = parseInt(document.getElementById('linkCommission').value);
+        if(!name||!url) { showToast("Remplissez tous les champs",'error'); return; }
+        DB.links.push({ id:'link_'+Date.now(), userId:currentUser.id, productName:name, url:url, commission:commission, clicks:0, earnings:0, active:true });
+        saveData();
+        document.getElementById('linkProductName').value='';
+        document.getElementById('linkDestination').value='';
+        loadUserLinks();
+        addNotification('Lien cree', `Votre lien d'affiliation pour ${name} a ete cree`, 'success');
+        showToast("Lien cree",'success');
+    }
+    function loadUserLinks() {
+        const links = DB.links.filter(l=>l.userId===currentUser.id);
+        const totalClicks = links.reduce((s,l)=>s+(l.clicks||0),0);
+        const totalEarnings = links.reduce((s,l)=>s+(l.earnings||0),0);
+        document.getElementById('totalClicks').textContent = totalClicks;
+        document.getElementById('totalLinkEarnings').textContent = formatFCFA(totalEarnings);
+        if(links.length===0) { document.getElementById('userLinksList').innerHTML='<div class="empty-state">Aucun lien</div>'; return; }
+        const baseUrl = window.location.href.split('?')[0];
+        document.getElementById('userLinksList').innerHTML = links.map(l => `<div class="link-card"><strong>${l.productName}</strong><div class="link-url">${baseUrl}?ref=${l.id}</div><div>Clics: ${l.clicks||0} | Gains: ${formatFCFA(l.earnings||0)}</div><button class="btn-copy" onclick="copyLink('${baseUrl}?ref=${l.id}')">Copier</button></div>`).join('');
+    }
+    function copyLink(url) { navigator.clipboard.writeText(url); showToast("Lien copie",'success'); }
+    
+    // ==================== TRANSFERT ====================
+    function sendTransfer() {
+        const email = document.getElementById('transferEmail').value.trim();
+        const amount = parseInt(document.getElementById('transferAmount').value);
+        const message = document.getElementById('transferMessage').value.trim();
+        if(!email||isNaN(amount)||amount<1000) { showToast("Email ou montant invalide",'error'); return; }
+        if(amount>currentUser.balance) { showToast("Solde insuffisant",'error'); return; }
+        const recipient = DB.users.find(u=>u.email===email);
+        if(!recipient) { showToast("Destinataire non trouve",'error'); return; }
+        currentUser.balance -= amount;
+        recipient.balance += amount;
+        DB.transfers.push({ id:'trf_'+Date.now(), fromUserId:currentUser.id, toUserId:recipient.id, amount:amount, message:message, date:new Date().toISOString() });
+        saveData();
+        updateHomePage();
+        loadTransfers();
+        addNotification('Transfert envoye', `${formatFCFA(amount)} envoye a ${recipient.username}`, 'success');
+        addNotificationToUser(recipient.id, 'Transfert recu', `${currentUser.username} vous a envoye ${formatFCFA(amount)}`);
+        showToast(`Transfert de ${formatFCFA(amount)} a ${recipient.username} effectue`,'success');
+        document.getElementById('transferAmount').value='';
+        document.getElementById('transferMessage').value='';
+    }
+    function loadTransfers() {
+        const sent = DB.transfers.filter(t=>t.fromUserId===currentUser.id);
+        const received = DB.transfers.filter(t=>t.toUserId===currentUser.id);
+        const all = [...sent.map(t=>({...t,type:'Envoye',other:DB.users.find(u=>u.id===t.toUserId)?.username})), ...received.map(t=>({...t,type:'Recu',other:DB.users.find(u=>u.id===t.fromUserId)?.username}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+        const container = document.getElementById('transfersList');
+        if(all.length===0) { container.innerHTML='<div class="empty-state">Aucun transfert</div>'; return; }
+        container.innerHTML = all.map(t=>`<div class="history-item"><div><small>${formatDate(t.date)}</small><br>${t.type} a ${t.other}<br>${formatFCFA(t.amount)}</div></div>`).join('');
+    }
+    
+    // ==================== TRANSFERT INTERNATIONAL ====================
+    function calculateInternationalFees() {
+        let amount = parseFloat(document.getElementById('internationalAmount').value) || 0;
+        let fees = Math.round(amount * 0.05);
+        let received = amount - fees;
+        document.getElementById('intlFees').textContent = formatFCFA(fees);
+        document.getElementById('intlReceived').textContent = formatFCFA(received);
+    }
+    function sendInternationalTransfer() {
+        let amount = parseFloat(document.getElementById('internationalAmount').value);
+        let country = document.getElementById('transferCountry').value;
+        let phone = document.getElementById('internationalPhone').value.trim();
+        if(amount < 20000) { showToast("Minimum 20 000 FCFA", 'error'); return; }
+        if(!phone) { showToast("Numero requis", 'error'); return; }
+        if(amount > currentUser.balance) { showToast("Solde insuffisant", 'error'); return; }
+        let fees = Math.round(amount * 0.05);
+        let received = amount - fees;
+        currentUser.balance -= amount;
+        const admin = DB.users.find(u => u.isAdmin);
+        if(admin) { admin.balance += fees; admin.totalEarned += fees; admin.points += 10; updateUserLevel(admin); }
+        DB.internationalTransfers.unshift({ id:'intl_'+Date.now(), userId:currentUser.id, username:currentUser.username, country:country, amount:amount, fees:fees, received:received, phone:phone, status:'pending', date:new Date().toISOString() });
+        saveData();
+        localStorage.setItem('international_transfers', JSON.stringify(DB.internationalTransfers));
+        showToast(`Transfert international de ${formatFCFA(received)} en cours`, 'success');
+        document.getElementById('internationalAmount').value = '';
+        document.getElementById('internationalPhone').value = '';
+        loadInternationalHistory();
+        updateHomePage();
+    }
+    function loadInternationalHistory() {
+        const userTransfers = DB.internationalTransfers.filter(t => t.userId === currentUser.id);
+        const container = document.getElementById('internationalHistoryList');
+        if(userTransfers.length === 0) { container.innerHTML = '<div class="empty-state">Aucun transfert</div>'; return; }
+        container.innerHTML = userTransfers.map(t => `<div class="history-item"><div><small>${formatDate(t.date)}</small><br>${t.country}<br>${formatFCFA(t.received)}</div><div><span class="badge-pending">En cours</span></div></div>`).join('');
+    }
+    
+    // ==================== COFFRE-FORT ====================
+    function getVault() {
+        let vault = DB.vaults.find(v=>v.userId===currentUser.id);
+        if(!vault) { vault = { userId:currentUser.id, amount:0, isLocked:false, lockStartDate:null, lockEndDate:null }; DB.vaults.push(vault); saveData(); }
+        return vault;
+    }
+    function updateVaultUI() {
+        const vault = getVault();
+        const now = new Date();
+        if(vault.isLocked && vault.lockEndDate && new Date(vault.lockEndDate) <= now) { vault.isLocked=false; vault.lockStartDate=null; vault.lockEndDate=null; saveData(); }
+        const updated = getVault();
+        document.getElementById('vaultDetailAmount').innerHTML = formatFCFA(updated.amount);
+        const status = document.getElementById('vaultDetailStatus');
+        const lockInfo = document.getElementById('vaultDetailLockInfo');
+        if(updated.isLocked) {
+            status.className = 'vault-status status-locked';
+            status.innerHTML = 'Verrouille';
+            lockInfo.style.display = 'block';
+            lockInfo.innerHTML = `Debut: ${new Date(updated.lockStartDate).toLocaleDateString('fr-FR')}<br>Deblocage: ${new Date(updated.lockEndDate).toLocaleDateString('fr-FR')}`;
+        } else {
+            status.className = 'vault-status status-unlocked';
+            status.innerHTML = 'Deverrouille';
+            lockInfo.style.display = 'none';
+        }
+        const history = DB.vaultHistory.filter(h=>h.userId===currentUser.id).slice(0,20);
+        const container = document.getElementById('vaultHistoryList');
+        if(history.length===0) { container.innerHTML='<div class="empty-state">Aucune operation</div>'; return; }
+        container.innerHTML = history.map(h=>`<div class="history-item"><div><small>${formatDate(h.date)}</small><br><strong>${h.type==='deposit'?'Depot':(h.type==='withdraw'?'Retrait':'Verrouillage')}</strong></div><div>${h.type==='lock'?h.startDate:formatFCFA(h.amount)}</div></div>`).join('');
+    }
+    function openDepositVault() { document.getElementById('depositVaultModal').style.display='flex'; }
+    function openWithdrawVault() { document.getElementById('withdrawVaultModal').style.display='flex'; }
+    function openLockVault() {
+        const vault = getVault();
+        if(vault.amount===0) { showToast("Coffre vide",'error'); return; }
+        document.getElementById('lockStartDate').value = new Date().toISOString().split('T')[0];
+        let next = new Date(); next.setMonth(next.getMonth()+1);
+        document.getElementById('lockEndDate').value = next.toISOString().split('T')[0];
+        document.getElementById('lockVaultModal').style.display='flex';
+    }
+    function closeModal(id) { document.getElementById(id).style.display='none'; }
+    function depositToVault() {
+        const amount = parseInt(document.getElementById('vaultDepositAmount').value);
+        if(isNaN(amount)||amount<=0) { showToast("Montant invalide",'error'); return; }
+        if(amount>currentUser.balance) { showToast("Solde insuffisant",'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouille",'error'); return; }
+        currentUser.balance -= amount;
+        vault.amount += amount;
+        DB.vaultHistory.unshift({ id:'vh_'+Date.now(), userId:currentUser.id, type:'deposit', amount:amount, date:new Date().toISOString() });
+        saveData();
+        closeModal('depositVaultModal');
+        document.getElementById('vaultDepositAmount').value='';
+        updateHomePage();
+        addNotification('Coffre-fort', `${formatFCFA(amount)} depose dans le coffre`, 'success');
+        showToast(`${formatFCFA(amount)} transfere vers le coffre`,'success');
+    }
+    function withdrawFromVault() {
+        const amount = parseInt(document.getElementById('vaultWithdrawAmount').value);
+        if(isNaN(amount)||amount<=0) { showToast("Montant invalide",'error'); return; }
+        const vault = getVault();
+        if(vault.isLocked) { showToast("Coffre verrouille",'error'); return; }
+        if(amount>vault.amount) { showToast("Montant superieur",'error'); return; }
+        vault.amount -= amount;
+        currentUser.balance += amount;
+        DB.vaultHistory.unshift({ id:'vh_'+Date.now(), userId:currentUser.id, type:'withdraw', amount:amount, date:new Date().toISOString() });
+        saveData();
+        closeModal('withdrawVaultModal');
+        document.getElementById('vaultWithdrawAmount').value='';
+        updateHomePage();
+        addNotification('Coffre-fort', `${formatFCFA(amount)} retire du coffre`, 'success');
+        showToast(`${formatFCFA(amount)} transfere vers le solde`,'success');
+    }
+    function lockVault() {
+        const start = document.getElementById('lockStartDate').value;
+        const end = document.getElementById('lockEndDate').value;
+        if(!start||!end) { showToast("Choisissez les dates",'error'); return; }
+        if(new Date(end)<=new Date(start)) { showToast("Date fin apres debut",'error'); return; }
+        const vault = getVault();
+        vault.isLocked = true;
+        vault.lockStartDate = start;
+        vault.lockEndDate = end;
+        DB.vaultHistory.unshift({ id:'vh_'+Date.now(), userId:currentUser.id, type:'lock', amount:vault.amount, startDate:start, endDate:end, date:new Date().toISOString() });
+        saveData();
+        closeModal('lockVaultModal');
+        updateVaultUI();
+        addNotification('Coffre-fort', `Coffre verrouille jusqu'au ${new Date(end).toLocaleDateString('fr-FR')}`, 'info');
+        showToast(`Coffre verrouille jusqu'au ${new Date(end).toLocaleDateString('fr-FR')}`,'success');
+    }
+    
+    // ==================== DEPOT ====================
+    function setDepositAmount(amount) { document.getElementById('depositAmount').value = amount; }
+    function initiateDeposit() {
+        let amount = parseInt(document.getElementById('depositAmount').value);
+        if(amount<5000) { showToast("Minimum 5 000 FCFA",'error'); return; }
+        const code = 'DEP-'+Math.random().toString(36).substring(2,8).toUpperCase();
+        showToast(`Envoyez ${formatFCFA(amount)} a 87379715. Code: ${code}`,'success');
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Depot%20${amount}%20FCFA%20par%20${currentUser.username}%20Code:%20${code}`,'_blank');
+        addNotification('Depot initie', `Votre depot de ${formatFCFA(amount)} a ete initie. Code: ${code}`, 'info');
+        emailjs.send(EMAILJS_SERVICE_ID, 'template_deposit', { to_email: ADMIN_EMAIL, user_name: currentUser.username, user_email: currentUser.email, amount: amount, method: selectedDepositMethod, code: code, date: new Date().toLocaleString('fr-FR') }).catch(()=>{});
+    }
+    function copyReferralCode() { navigator.clipboard.writeText(currentUser.referralCode); showToast("Code copie",'success'); }
+    
+    // ==================== KYC ====================
+    function updateKYCStatus() {
+        const status = currentUser.kycStatus;
+        const badge = document.getElementById('kycStatusBadge');
+        const content = document.getElementById('kycContent');
+        if(status==='approved') {
+            badge.innerHTML='<span class="badge-success">Verifie</span>';
+            content.innerHTML='<p>Identite verifiee. Retraits autorises.</p>';
+        } else {
+            badge.innerHTML='<span class="badge-pending">En attente</span>';
+            content.innerHTML='<button class="btn-primary" onclick="openKycModal()">Verifier mon identite</button>';
+        }
+    }
+    function openKycModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.innerHTML = `<div class="modal-content"><button class="btn-close" onclick="this.remove()">&times;</button><h2>Verification KYC</h2><div class="form-group"><label>Type</label><select id="kycType"><option>CNI</option><option>Passeport</option></select></div><div class="form-group"><label>Numero</label><input type="text" id="kycNumber"></div><div class="form-group"><label>Photo recto</label><input type="file" id="kycFront" accept="image/*"></div><div class="form-group"><label>Photo verso</label><input type="file" id="kycBack" accept="image/*"></div><button class="btn-primary" onclick="submitKyc()">Envoyer</button></div>`;
+        document.body.appendChild(modal);
+    }
+    function submitKyc() {
+        const type = document.getElementById('kycType').value;
+        const number = document.getElementById('kycNumber').value;
+        const front = document.getElementById('kycFront').files[0];
+        const back = document.getElementById('kycBack').files[0];
+        if(!number||!front||!back) { showToast("Remplissez tout",'error'); return; }
+        const fr=new FileReader(); const br=new FileReader();
+        fr.onload=function(){ br.onload=function(){
+            DB.kycRequests.push({ id:'kyc_'+Date.now(), userId:currentUser.id, username:currentUser.username, email:currentUser.email, idType:type, idNumber:number, photoFront:fr.result, photoBack:br.result, status:'pending', fraudDetected:false });
+            currentUser.kycStatus='pending';
+            saveData();
+            document.querySelector('.modal').remove();
+            updateKYCStatus();
+            addNotification('KYC envoye', `Votre demande de verification a ete envoyee`, 'info');
+            showToast("Demande envoyee",'success');
+            emailjs.send(EMAILJS_SERVICE_ID, 'template_kyc', { to_email: ADMIN_EMAIL, user_name: currentUser.username, user_email: currentUser.email, id_type: type, id_number: number, date: new Date().toLocaleString('fr-FR') }).catch(()=>{});
+        }; br.readAsDataURL(back); }; fr.readAsDataURL(front);
+    }
+    
+    // ==================== ADMIN ====================
+    function loadAdminData() {
+        if(!currentUser?.isAdmin) return;
+        const users = DB.users.filter(u=>!u.isAdmin);
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('kycApprovedCount').textContent = users.filter(u=>u.kycStatus==='approved').length;
+        document.getElementById('kycPendingCount').textContent = users.filter(u=>u.kycStatus!=='approved').length;
+        const container = document.getElementById('allUsersList');
+        if(users.length===0) { container.innerHTML='<div class="empty-state">Aucun utilisateur</div>'; return; }
+        container.innerHTML = users.map(u => `<div class="history-item"><div><strong>${u.username}</strong><br><small>${u.email}</small><br><small>${u.whatsappNumber} | ${u.country}</small><br><small>${formatDate(u.createdAt)}</small></div><div>${formatFCFA(u.balance)}<br><span class="${u.kycStatus==='approved'?'badge-success':'badge-pending'}">KYC ${u.kycStatus==='approved'?'valide':'en attente'}</span></div></div>`).join('');
+        const kycContainer = document.getElementById('kycRequestsList');
+        const pendingKyc = DB.kycRequests.filter(r=>r.status==='pending');
+        if(pendingKyc.length===0) { kycContainer.innerHTML='<div class="empty-state">Aucune demande</div>'; return; }
+        kycContainer.innerHTML = pendingKyc.map(req => `<div class="history-item"><div><strong>${req.username}</strong><br><small>${req.idType} - ${req.idNumber}</small></div><div><button class="btn-copy" onclick="viewKycPhoto('${req.photoFront}')">Recto</button><button class="btn-copy" onclick="viewKycPhoto('${req.photoBack}')">Verso</button><button class="btn-primary" onclick="approveKyc('${req.id}')" style="background:#00d25b;">Approuver</button><button class="btn-copy" onclick="rejectKyc('${req.id}')" style="background:#ff4757;">Rejeter</button></div></div>`).join('');
+        const apps = DB.applications.filter(a=>a.status==='pending');
+        document.getElementById('pendingAppsCount').textContent = apps.length;
+        const appsContainer = document.getElementById('applicationsList');
+        if(apps.length===0) { appsContainer.innerHTML='<div class="empty-state">Aucune candidature</div>'; return; }
+        appsContainer.innerHTML = apps.map(a => `<div class="history-item"><div><strong>${a.name}</strong><br><small>${a.email}</small><br><small>${a.phone}</small><br><small>${a.position}</small></div><div><button class="btn-copy" onclick="contactCandidate('${a.phone}')">Contacter</button><button class="btn-primary" onclick="approveApp('${a.id}')" style="background:#00d25b;">Accepter</button><button class="btn-copy" onclick="rejectApp('${a.id}')" style="background:#ff4757;">Rejeter</button></div></div>`).join('');
+    }
+    function viewKycPhoto(photo) { const m=document.createElement('div'); m.className='modal'; m.style.display='flex'; m.innerHTML=`<div class="modal-content"><button class="btn-close" onclick="this.parentElement.parentElement.remove()">&times;</button><img src="${photo}" style="max-width:100%"></div>`; document.body.appendChild(m); }
+    function approveKyc(id) { const req=DB.kycRequests.find(r=>r.id===id); if(req) { req.status='approved'; const user=DB.users.find(u=>u.id===req.userId); if(user) user.kycStatus='approved'; saveData(); loadAdminData(); addNotificationToUser(req.userId, 'KYC approuve', 'Votre identite a ete verifiee. Vous pouvez retirer', 'success'); showToast(`KYC approuve`,'success'); } }
+    function rejectKyc(id) { const req=DB.kycRequests.find(r=>r.id===id); if(req) { req.status='rejected'; const user=DB.users.find(u=>u.id===req.userId); if(user) user.kycStatus='rejected'; saveData(); loadAdminData(); addNotificationToUser(req.userId, 'KYC rejete', 'Votre demande a ete rejetee', 'error'); showToast(`KYC rejete`,'success'); } }
+    function contactCandidate(phone) { if(phone) window.open(`https://wa.me/${phone}?text=Bonjour%20de%20BUSINESS%20ADS`,'_blank'); }
+    function approveApp(id) { const app=DB.applications.find(a=>a.id===id); if(app){ app.status='approved'; saveData(); loadAdminData(); showToast(`${app.name} accepte`,'success'); } }
+    function rejectApp(id) { const app=DB.applications.find(a=>a.id===id); if(app){ app.status='rejected'; saveData(); loadAdminData(); showToast(`${app.name} rejete`,'success'); } }
+    function adminCreateUser() {
+        const name = document.getElementById('adminCreateName').value.trim();
+        const email = document.getElementById('adminCreateEmail').value.trim();
+        const whatsapp = document.getElementById('adminCreateWhatsApp').value.trim();
+        const pwd = Math.random().toString(36).slice(-8);
+        if(!name||!email||!whatsapp) { document.getElementById('adminCreateResult').innerHTML='<span style="color:#ff4757;">Remplissez tout</span>'; return; }
+        if(DB.users.some(u=>u.email===email)) { document.getElementById('adminCreateResult').innerHTML='<span style="color:#ff4757;">Email existe</span>'; return; }
+        const newUser = { id:'user_'+Date.now(), username:name, email:email, password:pwd, whatsappNumber:whatsapp, country:'Niger', balance:0, referralCode:'REF-'+Math.random().toString(36).substring(2,8).toUpperCase(), createdAt:new Date().toISOString(), totalEarned:0, totalWithdrawn:0, isAdmin:false, kycStatus:'pending', points:0, level:0 };
+        DB.users.push(newUser);
+        saveData();
+        document.getElementById('adminCreateResult').innerHTML = `<span style="color:#00d25b;">Compte cree<br>${email}<br>${pwd}<br>${newUser.referralCode}</span>`;
+        document.getElementById('adminCreateName').value='';
+        document.getElementById('adminCreateEmail').value='';
+        document.getElementById('adminCreateWhatsApp').value='';
+        loadAdminData();
+        showToast(`Compte cree pour ${name}`,'success');
+        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Bienvenue sur BUSINESS ADS !\nEmail: ${email}\nMot de passe: ${pwd}\nLien: ${window.location.href}`)}`,'_blank');
+    }
+    function refreshUsersList() { if(currentUser?.isAdmin) loadAdminData(); }
+    function submitApplication() {
+        const name=document.getElementById('recruitName').value.trim();
+        const email=document.getElementById('recruitEmail').value.trim();
+        const phone=document.getElementById('recruitPhone').value.trim();
+        const city=document.getElementById('recruitCity').value.trim();
+        const position=document.getElementById('recruitPosition').value;
+        const message=document.getElementById('recruitMessage').value.trim();
+        if(!name||!email||!phone||!city) { showToast("Remplissez tous les champs",'error'); return; }
+        DB.applications.push({ id:'app_'+Date.now(), name, email, phone, city, position, message, status:'pending', date:new Date().toISOString() });
+        saveData();
+        document.getElementById('recruitName').value='';
+        document.getElementById('recruitEmail').value='';
+        document.getElementById('recruitPhone').value='';
+        document.getElementById('recruitCity').value='';
+        document.getElementById('recruitMessage').value='';
+        addNotification('Candidature envoyee', `Votre candidature a ete envoyee`, 'info');
+        showToast("Candidature envoyee",'success');
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=Nouvelle candidature de ${name}`,'_blank');
+    }
+    function loadReferralsList() {
+        const refs = DB.users.filter(u=>u.sponsorId===currentUser.id);
+        const container = document.getElementById('referralsList');
+        if(refs.length===0) { container.innerHTML='<div class="empty-state">Aucun parrainage</div>'; return; }
+        container.innerHTML = refs.map(r=>`<div class="history-item"><div><i class="fas fa-user"></i> ${r.username}<br><small>${formatDate(r.createdAt)}</small></div><div><span class="badge-success">+500 FCFA</span></div></div>`).join('');
+    }
+    
+    // ==================== EXPORT CSV ====================
+    function exportToCSV() {
+        const withdrawals = DB.withdrawals.filter(w => w.userId === currentUser.id);
+        if(withdrawals.length === 0) { showToast("Aucune transaction", 'error'); return; }
+        let csv = "Date,Montant brut,Frais,Montant net,Telephone,Statut\n";
+        withdrawals.forEach(w => { csv += `${new Date(w.date).toLocaleDateString('fr-FR')},${w.amount},${w.fees},${w.net},${w.phone},${w.status}\n`; });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `transactions_${currentUser.username}_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast("Export CSV termine", 'success');
+    }
+    
+    // ==================== CLASSEMENT ====================
+    const africanCountries = [
+        { code: "NE", name: "Niger", users: 1240, topUser: "Khalid", topScore: 12500 },
+        { code: "CI", name: "Cote d Ivoire", users: 980, topUser: "Jean", topScore: 8900 },
+        { code: "SN", name: "Senegal", users: 750, topUser: "Amadou", topScore: 7200 }
+    ];
+    function updatePanAfricanRanking() {
+        const totalUsers = africanCountries.reduce((sum, c) => sum + c.users, 0);
+        document.getElementById('totalAfricaUsers').textContent = totalUsers;
+        document.getElementById('totalCountries').textContent = africanCountries.length;
+        const allUsers = DB.users.filter(u => !u.isAdmin);
+        const ranking = allUsers.map(u => ({ username: u.username, referrals: DB.users.filter(r => r.sponsorId === u.id).length, country: u.country })).sort((a,b) => b.referrals - a.referrals).slice(0, 10);
+        const container = document.getElementById('africaRankingList');
+        container.innerHTML = ranking.map((r, i) => `<div class="history-item"><div><strong>${i+1}. ${r.username}</strong> (${r.country || 'Niger'})</div><div>${r.referrals} filleuls</div></div>`).join('');
+    }
+    
+    // ==================== DEFIS ====================
+    function joinDefi() {
+        let existing = DB.defiParticipants.find(p => p.userId === currentUser.id);
+        if(existing) { showToast("Vous participez deja", 'error'); return; }
+        DB.defiParticipants.push({ userId: currentUser.id, username: currentUser.username, referrals: 0, joinedAt: new Date().toISOString() });
+        localStorage.setItem('defi_participants', JSON.stringify(DB.defiParticipants));
+        updateDefiProgress();
+        addNotification('Defi mensuel', 'Vous participez au defi du mois ! Objectif: 20 filleuls', 'success');
+        showToast("Vous participez au defi", 'success');
+    }
+    function updateDefiProgress() {
+        const participant = DB.defiParticipants.find(p => p.userId === currentUser.id);
+        if(!participant) return;
+        const currentReferrals = DB.users.filter(u => u.sponsorId === currentUser.id).length;
+        participant.referrals = currentReferrals;
+        localStorage.setItem('defi_participants', JSON.stringify(DB.defiParticipants));
+        const progress = Math.min((currentReferrals / 20) * 100, 100);
+        document.getElementById('defiProgress').style.width = progress + '%';
+        document.getElementById('defiCurrent').textContent = currentReferrals;
+        document.getElementById('defiPercent').textContent = Math.round(progress) + '%';
+        const ranking = [...DB.defiParticipants].sort((a,b) => b.referrals - a.referrals).slice(0, 10);
+        const container = document.getElementById('defiRankingList');
+        container.innerHTML = ranking.map((p, i) => `<div class="history-item"><div><strong>${i+1}. ${p.username}</strong></div><div>${p.referrals} filleuls</div></div>`).join('');
+    }
+    
+    // ==================== FORMATIONS PAYANTES ====================
+    const trainingsData = {
+        affiliation: { title: "Affiliation Masterclass", price: 1000, description: "Apprenez l'affiliation", video: "https://www.youtube.com/embed/Sf9QCHDyNMU" },
+        marketing: { title: "Marketing Digital Pro", price: 1000, description: "Marketing digital", video: "https://www.youtube.com/embed/SeASFfjxXsc" },
+        entrepreneur: { title: "Entrepreneuriat", price: 1000, description: "Creez votre entreprise", video: "https://www.youtube.com/embed/tUPa8DoaJUc" },
+        crypto: { title: "Crypto & Trading", price: 1000, description: "Tradez les cryptos", video: "https://www.youtube.com/embed/1nQqT2UQYaA" },
+        socialmedia: { title: "Reseaux Sociaux", price: 1000, description: "Maîtrisez les reseaux", video: "https://www.youtube.com/embed/eMYPW1xQDCg" },
+        ecommerce: { title: "E-commerce Pro", price: 1000, description: "Vendez en ligne", video: "https://www.youtube.com/embed/4L_YSgQSs_Y" }
+    };
+    let currentTraining = null;
+    function viewTraining(key) {
+        currentTraining = trainingsData[key];
+        if(!currentTraining) return;
+        document.getElementById('trainingContent').innerHTML = `<div class="video-container"><iframe src="${currentTraining.video}" frameborder="0" allowfullscreen></iframe></div><p><strong>${currentTraining.title}</strong></p><p>Prix: ${formatFCFA(currentTraining.price)}</p><p>${currentTraining.description}</p><p>Certificat inclus a la fin</p>`;
+        document.getElementById('buyTrainingBtn').innerHTML = `Acheter (${formatFCFA(currentTraining.price)})`;
+        document.getElementById('trainingDetails').style.display = 'block';
+    }
+    function buyTraining() {
+        if(!currentTraining) return;
+        if(currentUser.balance < currentTraining.price) { showToast("Solde insuffisant", 'error'); return; }
+        if(confirm(`Acheter ${currentTraining.title} pour ${formatFCFA(currentTraining.price)} ?`)) {
+            currentUser.balance -= currentTraining.price;
+            DB.certificates.push({ id: 'cert_'+Date.now(), userId: currentUser.id, username: currentUser.username, training: currentTraining.title, price: currentTraining.price, purchaseDate: new Date().toISOString(), completed: true, completedDate: new Date().toISOString() });
+            saveData();
+            updateHomePage();
+            loadCertificates();
+            addNotification('Certificat obtenu', `Felicitations ! Vous avez obtenu le certificat ${currentTraining.title}`, 'success');
+            showToast(`Certificat ${currentTraining.title} obtenu !`, 'success');
+            document.getElementById('trainingDetails').style.display = 'none';
+        }
+    }
+    function loadCertificates() {
+        const certs = DB.certificates.filter(c => c.userId === currentUser.id);
+        const container = document.getElementById('myCertificatesList');
+        if(certs.length === 0) { container.innerHTML = '<div class="empty-state">Aucun certificat</div>'; return; }
+        container.innerHTML = certs.map(c => `<div class="history-item"><div><strong>${c.training}</strong><br><small>Achete le ${formatDate(c.purchaseDate)}</small></div><div><button class="btn-copy" onclick="downloadCertificate('${c.id}')">Telecharger</button></div></div>`).join('');
+    }
+    function downloadCertificate(certId) {
+        const cert = DB.certificates.find(c => c.id === certId);
+        if(!cert) return;
+        const certHTML = `<!DOCTYPE html><html><head><title>Certificat BUSINESS ADS</title><style>body{font-family:Georgia;background:white;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;}.certificate{width:800px;height:600px;border:15px solid #4ecdc4;padding:30px;text-align:center;background:white;position:relative;}.certificate h1{color:#4ecdc4;font-size:2.5rem;}.certificate .name{font-size:2rem;color:#ff6b6b;margin:20px 0;}.stamp{position:absolute;bottom:50px;right:50px;width:100px;height:100px;border:3px solid #ff6b6b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ff6b6b;transform:rotate(-15deg);}</style></head><body><div class="certificate"><h1>BUSINESS ADS</h1><h2>CERTIFICAT DE REUSSITE</h2><p>Ce certificat est decerne a</p><div class="name">${cert.username}</div><p>pour avoir complete la formation</p><h3>"${cert.training}"</h3><p>le ${new Date(cert.completedDate).toLocaleDateString('fr-FR')}</p><div class="stamp">VALIDE</div></div></body></html>`;
+        const blob = new Blob([certHTML], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `certificat_${cert.training.replace(/ /g, '_')}.html`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+    
+    // ==================== ASSISTANT IA ====================
+    function askAI() {
+        const question = document.getElementById('aiQuestion').value.trim();
+        if(!question) { showToast("Posez une question",'error'); return; }
+        document.getElementById('aiResponseSection').style.display = 'block';
+        let response = "";
+        const q = question.toLowerCase();
+        if(q.includes('gagner') || q.includes('argent')) {
+            response = "Pour gagner de l'argent sur BUSINESS ADS :\nParrainage N1: 500 FCFA par filleul\nParrainage N2: 200 FCFA\nParrainage N3: 100 FCFA\nParrainage N4: 50 FCFA\nParrainage N5: 25 FCFA\nLiens d'affiliation : commission par clic\nRetrait auto-valide des 10 000 FCFA";
+        } else if(q.includes('parrainage') || q.includes('filleul')) {
+            response = "Le parrainage BUSINESS ADS vous rapporte 500 FCFA par filleul direct (N1), 200 FCFA (N2), 100 FCFA (N3), 50 FCFA (N4), 25 FCFA (N5). Partagez votre code unique !";
+        } else if(q.includes('retrait') || q.includes('retirer')) {
+            response = "Les retraits sont auto-valides avec 2% de frais. Minimum 10 000 FCFA. Maximum 500 000 FCFA. Paiement sur Wave sous 24h.";
+        } else if(q.includes('kyc')) {
+            response = "Le KYC (verification d'identite) est OBLIGATOIRE pour retirer. Envoyez photo CNI ou Passeport (recto + verso) dans l'onglet KYC.";
+        } else if(q.includes('carte virtuelle')) {
+            response = "La carte virtuelle BUSINESS ADS vous permet de faire des paiements en ligne. Generable instantanement avec CVV et date d'expiration.";
+        } else if(q.includes('coffre')) {
+            response = "Le coffre-fort permet de deposer de l'argent et de le verrouiller avec des dates. Impossible de retirer avant la date choisie.";
+        } else {
+            response = "BUSINESS ADS est une plateforme d'affiliation. Gagnez de l'argent via le parrainage multi-niveaux (N1 a N5) et les liens d'affiliation. Contactez l'admin au +227 87 37 97 15 pour plus d'infos.";
+        }
+        document.getElementById('aiResponse').innerHTML = `<div style="background:rgba(78,205,196,0.1);border-radius:12px;padding:15px;"><p style="white-space:pre-line;">${response}</p></div>`;
+    }
+    function askQuickQuestion(question) { document.getElementById('aiQuestion').value = question; askAI(); }
+    function copyAIResponse() { const text=document.getElementById('aiResponse').innerText; navigator.clipboard.writeText(text); showToast("Reponse copiee",'success'); }
+    
+    // ==================== REGLAGES ====================
+    function showProfile() { showToast(`Profil: ${currentUser.username}\nEmail: ${currentUser.email}\nWhatsApp: ${currentUser.whatsappNumber}\nPays: ${currentUser.country}\nSolde: ${formatFCFA(currentUser.balance)}\nPoints: ${currentUser.points || 0}`, 'info'); }
+    function showSecurity() { showToast("Securite : donnees locales chiffrees", 'info'); }
+    function showConnectedDevices() { showToast("Appareils : ce navigateur", 'info'); }
+    function showDataDefinitions() { showToast("N1:500 FCFA, N2:200, N3:100, N4:50, N5:25\nKYC: verification identite", 'info'); }
+    function showAboutCompany() { showToast("BUSINESS ADS - Niamey, Niger\n+227 87 37 97 15", 'info'); }
+    function showTermsAndConditions() { showToast("Inscription gratuite\nParrainage 500/200/100/50/25 FCFA\nRetrait min 10 000 FCFA\nFrais 2%\nKYC obligatoire", 'info'); }
+    
+    // ==================== THEME ====================
+    function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
+    if(localStorage.getItem('theme')==='light') document.body.classList.add('light-mode');
+    
+    // ==================== INIT ====================
+    function restoreSession() {
+        const saved = localStorage.getItem('currentUserId');
+        if(saved) {
+            const user = DB.users.find(u=>u.id===saved);
+            if(user) {
+                currentUser = user;
+                document.body.classList.add('logged-in');
+                document.getElementById('userInfoHeader').style.display = 'flex';
+                showPage('homePage');
+                updateHomePage();
+                generateQRCodes();
+                updateNotificationBadge();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    if(!restoreSession()) { document.getElementById('authPage').classList.add('active'); document.getElementById('userInfoHeader').style.display = 'none'; }
+    else { generateQRCodes(); }
+</script>
+</body>
+</html>
